@@ -1,16 +1,18 @@
 package estructuras.Grafo;
 
+import dominio.CentroLogistico;
+import dominio.Conexion;
 import estructuras.Lista.ListaImp;
 import estructuras.Cola.Cola;
 import estructuras.Tupla.Tupla;
 
-public class Grafo<V, P> implements IGrafo<V, P> {
+public class Grafo implements IGrafo {
 
     private int tope;
     private int cantActual;
     private boolean esDirigido;
 
-    private V[] vertices;
+    private CentroLogistico[] vertices;
     private Arista[][] matAdy;
 
     public int getTope() {
@@ -39,7 +41,7 @@ public class Grafo<V, P> implements IGrafo<V, P> {
         this.cantActual = 0;
 
         // Casteamos. Necesario en java, sino se rompe
-        this.vertices = (V[]) new Object[tope];
+        this.vertices = (CentroLogistico[]) new Object[tope];
         this.matAdy = new Arista[tope][tope];
 
         for (int i = 0; i < tope; i++) {
@@ -58,7 +60,7 @@ public class Grafo<V, P> implements IGrafo<V, P> {
         return -1;
     }
 
-    private int obtenerPosVertice(V vertice) {
+    private int obtenerPosVertice(CentroLogistico vertice) {
         for (int i = 0; i < tope; i++) {
             if (this.vertices[i] != null && this.vertices[i].equals(vertice)) {
                 return i;
@@ -68,7 +70,7 @@ public class Grafo<V, P> implements IGrafo<V, P> {
     }
 
     @Override
-    public void agregarVertice(V vert) {
+    public void agregarVertice(CentroLogistico vert) {
         int posLibre = this.obtenerPosLibre();
         if (posLibre != -1) {
             this.vertices[posLibre] = vert;
@@ -77,7 +79,7 @@ public class Grafo<V, P> implements IGrafo<V, P> {
     }
 
     @Override
-    public void agregarArista(V vOrigen, V vDestino, P peso) {
+    public void agregarArista(CentroLogistico vOrigen, CentroLogistico vDestino, Conexion peso) {
 
         int posOrig = this.obtenerPosVertice(vOrigen);
         int posDest = this.obtenerPosVertice(vDestino);
@@ -95,7 +97,7 @@ public class Grafo<V, P> implements IGrafo<V, P> {
     }
 
     @Override
-    public void borrarVertice(V vertice) {
+    public void borrarVertice(CentroLogistico vertice) {
         int posVert = this.obtenerPosVertice(vertice);
         if (posVert != -1) {
             this.vertices[posVert] = null;
@@ -109,7 +111,7 @@ public class Grafo<V, P> implements IGrafo<V, P> {
     }
 
     @Override
-    public void borrarArista(V vOrigen, V vDestino) {
+    public void borrarArista(CentroLogistico vOrigen, CentroLogistico vDestino) {
         int posOrig = this.obtenerPosVertice(vOrigen);
         int posDest = this.obtenerPosVertice(vDestino);
         if (posOrig != -1 && posDest != -1) {
@@ -122,8 +124,8 @@ public class Grafo<V, P> implements IGrafo<V, P> {
     }
 
     @Override
-    public ListaImp<V> verticesAdyacentes(V vertice) {
-        ListaImp<V> adyacentes = new ListaImp<>();
+    public ListaImp<CentroLogistico> verticesAdyacentes(CentroLogistico vertice) {
+        ListaImp<CentroLogistico> adyacentes = new ListaImp<>();
         int posVertice = this.obtenerPosVertice(vertice);
         if (posVertice != -1) {
             for (int i = 0; i < this.tope; i++) {
@@ -136,8 +138,8 @@ public class Grafo<V, P> implements IGrafo<V, P> {
     }
 
     @Override
-    public ListaImp<V> verticesIncidentes(V vertice) {
-        ListaImp<V> incidentes = new ListaImp<>();
+    public ListaImp<CentroLogistico> verticesIncidentes(CentroLogistico vertice) {
+        ListaImp<CentroLogistico> incidentes = new ListaImp<>();
         int posVertice = this.obtenerPosVertice(vertice);
         if (posVertice != -1) {
             for (int i = 0; i < this.tope; i++) {
@@ -150,7 +152,7 @@ public class Grafo<V, P> implements IGrafo<V, P> {
     }
 
     @Override
-    public boolean sonAdyacentes(V vOrigen, V vDestino) {
+    public boolean sonAdyacentes(CentroLogistico vOrigen, CentroLogistico vDestino) {
 
         int posOrig = this.obtenerPosVertice(vOrigen);
         int posDest = this.obtenerPosVertice(vDestino);
@@ -161,15 +163,15 @@ public class Grafo<V, P> implements IGrafo<V, P> {
     }
 
     @Override
-    public boolean existeVertice(V vertice) {
+    public boolean existeVertice(CentroLogistico vertice) {
         return this.obtenerPosVertice(vertice) > -1;
     }
 
 
 
 
-    public ListaImp<V> bfsConNivelYCantidadDeNiveles(V vert, int cantidad) {
-        ListaImp<V> listaRet=new ListaImp<V>();
+    public ListaImp<CentroLogistico> bfsConNivelYCantidadDeNiveles(CentroLogistico vert, int cantidad) {
+        ListaImp<CentroLogistico> listaRet=new ListaImp<CentroLogistico>();
         boolean[] visitados = new boolean[tope];
         int inicio = obtenerPosVertice(vert);
         Cola<Tupla> cola = new Cola<>();
@@ -191,5 +193,67 @@ public class Grafo<V, P> implements IGrafo<V, P> {
             }
         }
     return listaRet;
+    }
+
+
+
+    public void dijkstra(String verticeInicial) {
+        /*
+        1-marcar arreglo de costos en inf.
+        2-definir los visitados como false.
+        3-definir anteriores como null.
+        4- marcar vertice inicial como  costo 0
+
+        Para cada vertice:
+
+            5- Visitar vertice de menor costo no visitado
+            6- A sus adyacentes no visitados actualizamos costos
+
+
+        * */
+
+        int[] costos = new int[vertices.length];
+        boolean[] visitados = new boolean[vertices.length];
+        String[] anteriores = new String[vertices.length];
+
+        for (int i = 0; i < costos.length; i++) {
+            costos[i] = Integer.MAX_VALUE;
+            visitados[i] = false;
+            anteriores[i] = "**";
+        }
+
+        int posVerticeInicial = this.obtenerPosVertice(verticeInicial);
+        costos[posVerticeInicial] = 0;
+
+        for (int i = 0; i < vertices.length; i++) {
+            int posVerMenorCosto = this.obtenerPosVerticeMenorCosto(costos, visitados);
+            if (posVerMenorCosto > -1) {
+                visitados[posVerMenorCosto] = true;
+                for (int j = 0; j < vertices.length; j++) {
+                    if (matAdy[posVerMenorCosto][j].isExiste() && !visitados[j]) {
+                        if (costos[j] > (costos[posVerMenorCosto] + matAdy[posVerMenorCosto][j].getPeso())) {
+                            costos[j] = costos[posVerMenorCosto] + matAdy[posVerMenorCosto][j].getPeso();
+                            anteriores[j] = vertices[posVerMenorCosto];
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < vertices.length; i++) {
+            System.out.println(vertices[i] + " -> (" + costos[i] + "," + anteriores[i] + ")");
+        }
+    }
+
+    private int obtenerPosVerticeMenorCosto(int[] costos, boolean[] visitados) {
+        int minPos = -1;
+        int minCosto = Integer.MAX_VALUE;
+        for (int i = 0; i < costos.length; i++) {
+            if (costos[i] < minCosto && !visitados[i]) {
+                minPos = i;
+                minCosto = costos[i];
+            }
+        }
+        return minPos;
     }
 }

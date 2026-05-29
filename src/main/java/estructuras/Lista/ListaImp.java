@@ -98,4 +98,9 @@ public boolean esVacia() {
     return inicio == null;
 }
 
+public void set(int pos, T dato) {
+    Nodo<T> nodo = recuperar(pos);
+    nodo.setDato(dato);
+}
+
 }

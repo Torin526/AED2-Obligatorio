@@ -16,7 +16,7 @@ import estructuras.Lista.ListaImp;
 public class ImplementacionSistema implements Sistema {
 
 
-    private Grafo<CentroLogistico, Conexion> grafoConCentros;
+    private Grafo grafoConCentros;
     private ABB<Mercaderia> arbolGralMercaderia;
     private ABB<WMercaderiaPorCodigo> arbolGralMercaderiaPorCodigo;
     private ListaImp<ABB<Mercaderia>> arbolesPorCategoria;
@@ -30,7 +30,7 @@ public class ImplementacionSistema implements Sistema {
         }
 
 
-        this.grafoConCentros = new Grafo<>(maxCentros, true);
+        this.grafoConCentros = new Grafo(maxCentros, true);
         this.grafoConCentros.setTope(maxCentros);
         this.grafoConCentros.setCantActual(0);
         vectorCentros = new CentroLogistico[maxCentros];
@@ -291,9 +291,11 @@ public class ImplementacionSistema implements Sistema {
             }
 
             ListaImp<CentroLogistico> listaPasarAString=grafoConCentros.bfsConNivelYCantidadDeNiveles(centroLogFantasma, cantidad);
-            //seguir aca. falta ordenar y pasar a string la lista!!!
 
-            return Retorno.ok();
+            String retorno=ordenaListaDevuelveString(listaPasarAString);
+
+
+            return Retorno.ok(retorno);
         }
 
         @Override
@@ -313,6 +315,31 @@ public class ImplementacionSistema implements Sistema {
 
 
 //----------------------------------METODOS ACCESORIOS----------------------------------
+
+
+    private String ordenaListaDevuelveString(ListaImp<CentroLogistico> lista) {
+        String ret="";
+        for (int i = 0; i < lista.largo() - 1; i++) {
+            int indiceMin = i;
+
+            for (int j = i + 1; j < lista.largo(); j++) {
+                if (lista.recuperar(j).getDato()
+                        .compareTo(lista.recuperar(indiceMin).getDato()) < 0) {
+                    indiceMin = j;
+                }
+            }
+            if (indiceMin != i) {
+                CentroLogistico temp = lista.recuperar(i).getDato();
+                lista.recuperar(i).setDato(lista.recuperar(indiceMin).getDato());
+                lista.recuperar(indiceMin).setDato(temp);
+            }
+           ret+= lista.recuperar(i).getDato().getCodigo()+";"+lista.recuperar(i).getDato().getNombre()+"|";
+        }
+        ret+= lista.recuperar(lista.largo()-1).getDato().getCodigo()+";"+lista.recuperar(lista.largo()-1).getDato().getNombre();
+
+        return ret;
+
+    }
 
     private boolean formatoValidoCodigo(String codigo) {
         String formato = "[A-Za-z]{2}-[0-9]{3}-[A-Za-z0-9]{6}";

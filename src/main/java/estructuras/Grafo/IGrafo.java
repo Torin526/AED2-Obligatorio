@@ -1,22 +1,24 @@
 package estructuras.Grafo;
 
+import dominio.CentroLogistico;
+import dominio.Conexion;
 import estructuras.Lista.ListaImp;
 
-public interface IGrafo<V, P> {
+public interface IGrafo {
 
-    void agregarVertice(V vert);
+    void agregarVertice(CentroLogistico vert);
 
-    void agregarArista(V vOrigen, V vDestino, P peso);
+    void agregarArista(CentroLogistico vOrigen, CentroLogistico vDestino, Conexion peso);
 
-    void borrarVertice(V vertice);
+    void borrarVertice(CentroLogistico vertice);
 
-    void borrarArista(V vOrigen, V vDestino);
+    void borrarArista(CentroLogistico vOrigen, CentroLogistico vDestino);
 
-    ListaImp<V> verticesAdyacentes(V vertice);
+    ListaImp<CentroLogistico> verticesAdyacentes(CentroLogistico vertice);
 
-    ListaImp<V> verticesIncidentes(V vertice);
+    ListaImp<CentroLogistico> verticesIncidentes(CentroLogistico vertice);
 
-    boolean sonAdyacentes(V vOrigen, V vDestino);
+    boolean sonAdyacentes(CentroLogistico vOrigen, CentroLogistico vDestino);
 
-    boolean existeVertice(V vertice);
+    boolean existeVertice(CentroLogistico vertice);
 }
