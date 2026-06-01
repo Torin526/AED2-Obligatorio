@@ -13,7 +13,7 @@ public class Grafo implements IGrafo {
     private boolean esDirigido;
 
     private CentroLogistico[] vertices;
-    private Arista[][] matAdy;
+    private Arista<Conexion>[][] matAdy;
 
     public int getTope() {
         return tope;
@@ -195,54 +195,83 @@ public class Grafo implements IGrafo {
     return listaRet;
     }
 
-
-
-    public void dijkstra(String verticeInicial) {
-        /*
-        1-marcar arreglo de costos en inf.
-        2-definir los visitados como false.
-        3-definir anteriores como null.
-        4- marcar vertice inicial como  costo 0
-
-        Para cada vertice:
-
-            5- Visitar vertice de menor costo no visitado
-            6- A sus adyacentes no visitados actualizamos costos
-
-
-        * */
-
-        int[] costos = new int[vertices.length];
+    private void caminoMasCortoSegunCriterio(CentroLogistico verticeInicial, String criterio, int[] costos, CentroLogistico[] anteriores) {
         boolean[] visitados = new boolean[vertices.length];
-        String[] anteriores = new String[vertices.length];
 
-        for (int i = 0; i < costos.length; i++) {
+        // 1. Inicialización de los arrays que nos pasaron por parámetro
+        for (int i = 0; i < vertices.length; i++) {
             costos[i] = Integer.MAX_VALUE;
             visitados[i] = false;
-            anteriores[i] = "**";
+            anteriores[i] = null;
         }
 
         int posVerticeInicial = this.obtenerPosVertice(verticeInicial);
+        // Control por si el origen no existe en el grafo
+        if (posVerticeInicial == -1) return;
+
         costos[posVerticeInicial] = 0;
 
+        // 2. Bucle principal de Dijkstra
         for (int i = 0; i < vertices.length; i++) {
             int posVerMenorCosto = this.obtenerPosVerticeMenorCosto(costos, visitados);
             if (posVerMenorCosto > -1) {
                 visitados[posVerMenorCosto] = true;
+
                 for (int j = 0; j < vertices.length; j++) {
                     if (matAdy[posVerMenorCosto][j].isExiste() && !visitados[j]) {
-                        if (costos[j] > (costos[posVerMenorCosto] + matAdy[posVerMenorCosto][j].getPeso())) {
-                            costos[j] = costos[posVerMenorCosto] + matAdy[posVerMenorCosto][j].getPeso();
-                            anteriores[j] = vertices[posVerMenorCosto];
+
+                        // Extraemos el peso según el criterio
+                        int pesoArista = 0;
+                        Conexion conexion = matAdy[posVerMenorCosto][j].getPeso();
+
+                        if (criterio.equals("DISTANCIA")) {
+                            pesoArista = conexion.getDistancia();
+                        } else {
+                            pesoArista = conexion.getTiempo();
+                        }
+
+                        // Etapa de relajación (modifica directamente los arrays del parámetro)
+                        if (costos[j] > (costos[posVerMenorCosto] + pesoArista)) {
+                            costos[j] = costos[posVerMenorCosto] + pesoArista;
+                            anteriores[j] = vertices[posVerMenorCosto]; // Guarda el nombre del vértice
                         }
                     }
                 }
             }
         }
 
-        for (int i = 0; i < vertices.length; i++) {
-            System.out.println(vertices[i] + " -> (" + costos[i] + "," + anteriores[i] + ")");
+
+   }
+
+    public ListaImp<CentroLogistico> obtenerCaminoMasCorto(CentroLogistico origen, CentroLogistico destino, String criterio) {
+        int[] costos = new int[tope];
+        CentroLogistico[] anteriores = new CentroLogistico[tope];
+
+        // 1. Corre el Dijkstra privado y llena los arrays internamente en el grafo
+        caminoMasCortoSegunCriterio(origen, criterio, costos, anteriores);
+
+        int posDestino = obtenerPosVertice(destino);
+
+        if (costos[posDestino] == Integer.MAX_VALUE) {
+            return null; // Devolvemos null indicando que el destino es inalcanzable
         }
+
+
+
+        ListaImp<CentroLogistico> camino = new ListaImp<>();
+
+        // 2. El propio grafo, que SÍ conoce las posiciones, reconstruye el camino hacia atrás
+        int posActual = obtenerPosVertice(destino);
+        int posOrigen = obtenerPosVertice(origen);
+
+        while (posActual != posOrigen) {
+            camino.insertar(vertices[posActual]); // Lo mete en una lista
+            CentroLogistico nomAnterior = anteriores[posActual];
+            posActual = obtenerPosVertice(nomAnterior);
+        }
+        camino.insertar(vertices[posOrigen]); // Mete el origen al final
+
+        return camino;
     }
 
     private int obtenerPosVerticeMenorCosto(int[] costos, boolean[] visitados) {
@@ -256,4 +285,14 @@ public class Grafo implements IGrafo {
         }
         return minPos;
     }
+
+    public CentroLogistico obtenerVerticePorCodigo(String codigo) {
+        CentroLogistico verticeFantasma=new CentroLogistico(codigo, null, null, null);
+        int pos = obtenerPosVertice(verticeFantasma);
+        if (pos != -1) {
+            return vertices[pos];
+        }
+        return null;
+    }
+
 }

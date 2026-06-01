@@ -290,6 +290,7 @@ public class ImplementacionSistema implements Sistema {
                 return Retorno.error3("El centro logistico no existe.");
             }
 
+
             ListaImp<CentroLogistico> listaPasarAString=grafoConCentros.bfsConNivelYCantidadDeNiveles(centroLogFantasma, cantidad);
 
             String retorno=ordenaListaDevuelveString(listaPasarAString);
@@ -300,7 +301,33 @@ public class ImplementacionSistema implements Sistema {
 
         @Override
         public Retorno viajeCostoMinimoDistancia (String codigoOrigen, String codigoDestino){
-            return Retorno.noImplementada();
+            if (codigoOrigen.isBlank()||codigoOrigen==null||codigoOrigen.isBlank()||codigoOrigen==null) {
+                return Retorno.error1("Los datos a ingresar no pueden estar vacios");
+            }
+
+
+            CentroLogistico centroOrigenFantasma= new CentroLogistico(codigoOrigen, null, null, null);
+            if (!(grafoConCentros.existeVertice(centroOrigenFantasma))) {
+                return Retorno.error2("El centro logistico no existe.");
+            }
+
+            CentroLogistico centroDestinoFantasma= new CentroLogistico(codigoDestino, null, null, null);
+            if (!(grafoConCentros.existeVertice(centroDestinoFantasma))) {
+                return Retorno.error3("El centro de destino no existe.");
+            }
+
+            ListaImp<CentroLogistico> camino = grafoConCentros.obtenerCaminoMasCorto(centroOrigenFantasma, centroDestinoFantasma, "DISTANCIA");
+
+
+            if (camino == null) {
+                return Retorno.error4("No existe conexión entre los vértices.");
+            }
+
+
+
+            String caminoFinal = armarStringCamino(camino);
+
+            return Retorno.ok(caminoFinal);
         }
 
         @Override
@@ -315,6 +342,8 @@ public class ImplementacionSistema implements Sistema {
 
 
 //----------------------------------METODOS ACCESORIOS----------------------------------
+
+
 
 
     private String ordenaListaDevuelveString(ListaImp<CentroLogistico> lista) {
@@ -414,6 +443,37 @@ public class ImplementacionSistema implements Sistema {
 
         }
 
+    }
+
+
+    private String armarStringCamino(ListaImp<CentroLogistico> listaCamino) {
+        String resultado = "";
+
+        // 1. Usamos el iterador o recorrida estándar de tu ListaImp
+        // (Asumo que tenés un método para avanzar o un bucle tradicional de tu estructura)
+        // Supongamos una recorrida estándar obteniendo los elementos:
+        for (int i = 1; i <= listaCamino.largo(); i++) {
+            CentroLogistico centro = listaCamino.recuperar(i).getDato();
+
+            // 2. Armamos el bloque de datos de ESTE centro específico usando sus getters
+            String datosCentro = centro.getCodigo() + ";" +
+                    centro.getNombre() + ";" +
+                    centro.getDepartamento() + ";" +
+                    centro.getDireccion();
+
+            // 3. ¡EL TRUCO DEL ORDEN!:
+            // Como la lista viene al revés, si sumamos "datosCentro + resultado",
+            // lo que está al final de la lista (el Origen) terminará quedando al principio del String.
+            if (resultado.equals("")) {
+                // Si es el primer elemento que procesamos (el Destino), no lleva pipe adelante
+                resultado = datosCentro;
+            } else {
+                // Para los siguientes, los pegamos a la izquierda separados por el pipe '|'
+                resultado = datosCentro + "|" + resultado;
+            }
+        }
+
+        return resultado;
     }
 
 

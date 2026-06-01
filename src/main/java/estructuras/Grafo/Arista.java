@@ -1,7 +1,7 @@
 package estructuras.Grafo;
 
-public class Arista<T> {
-    private T peso;
+public class Arista<P> {
+    private P peso;
     private boolean existe;
 
     public Arista() {
@@ -9,16 +9,16 @@ public class Arista<T> {
         this.existe = false;
     }
 
-    public Arista(T peso) {
+    public Arista(P peso) {
         this.peso = peso;
         this.existe = true;
     }
 
-    public T getPeso() {
+    public P getPeso() {
         return peso;
     }
 
-    public void setPeso(T peso) {
+    public void setPeso(P peso) {
         this.peso = peso;
     }
 
