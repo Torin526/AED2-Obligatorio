@@ -332,8 +332,35 @@ public class ImplementacionSistema implements Sistema {
 
         @Override
         public Retorno viajeCostoMinimoTiempo (String codigoOrigen, String codigoDestino){
-            return Retorno.noImplementada();
+            if (codigoOrigen.isBlank()||codigoOrigen==null||codigoOrigen.isBlank()||codigoOrigen==null) {
+                return Retorno.error1("Los datos a ingresar no pueden estar vacios");
+            }
+
+
+            CentroLogistico centroOrigenFantasma= new CentroLogistico(codigoOrigen, null, null, null);
+            if (!(grafoConCentros.existeVertice(centroOrigenFantasma))) {
+                return Retorno.error2("El centro logistico no existe.");
+            }
+
+            CentroLogistico centroDestinoFantasma= new CentroLogistico(codigoDestino, null, null, null);
+            if (!(grafoConCentros.existeVertice(centroDestinoFantasma))) {
+                return Retorno.error3("El centro de destino no existe.");
+            }
+
+            ListaImp<CentroLogistico> camino = grafoConCentros.obtenerCaminoMasCorto(centroOrigenFantasma, centroDestinoFantasma, "TIEMPO");
+
+
+            if (camino == null) {
+                return Retorno.error4("No existe conexión entre los vértices.");
+            }
+
+
+
+            String caminoFinal = armarStringCamino(camino);
+
+            return Retorno.ok(caminoFinal);
         }
+
 
 
 
