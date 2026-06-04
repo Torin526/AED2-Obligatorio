@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Test13ViajeCostoMinimoTempo {
+public class Test13ViajeCostoMinimoTiempo {
 
     private Retorno retorno;
     private final Sistema s = new ImplementacionSistema();
