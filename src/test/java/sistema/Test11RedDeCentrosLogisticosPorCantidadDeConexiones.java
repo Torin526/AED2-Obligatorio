@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Test11RedCentrosPorCantidadDeConexiones {
+public class Test11RedCentrosPorCantidadDeConexionesTest {
     private Retorno retorno;
     private final Sistema s = new ImplementacionSistema();
 

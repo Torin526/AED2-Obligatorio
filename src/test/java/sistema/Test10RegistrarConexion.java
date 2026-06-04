@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Test10RegistrarConexion {
+public class Test10RegistrarConexionTest {
     private Retorno retorno;
     private final Sistema s = new ImplementacionSistema();
 

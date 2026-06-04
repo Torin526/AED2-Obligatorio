@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Test02RegistrarMercaderia {
+public class Test02RegistrarMercaderiaTest {
     private Retorno retorno;
     private final Sistema s = new ImplementacionSistema();
 

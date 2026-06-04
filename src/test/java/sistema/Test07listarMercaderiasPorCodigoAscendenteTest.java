@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Test07listarMercaderiasPorCodigoAscendente {
+public class Test07listarMercaderiasPorCodigoAscendenteTest {
     private Retorno retorno;
     private final Sistema s = new ImplementacionSistema();
 
