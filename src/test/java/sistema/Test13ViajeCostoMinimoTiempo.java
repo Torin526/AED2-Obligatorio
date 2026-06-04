@@ -35,7 +35,7 @@ public class Test13ViajeCostoMinimoTiempo {
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
         // Debe retornar la suma de los minutos en valorEntero
-        assertEquals(45, retorno.getValorEntero());
+        assertEquals(45, retorno.getValorInteger());
 
         // Formato esperado de Origen y Destino separados por "|"
         String esperado = "A;Centro A;MVD;Dir A|B;Centro B;CAN;Dir B";
