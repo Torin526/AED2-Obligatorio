@@ -18,13 +18,13 @@ public class Test05ListarMercaderiasPorIdDescendente {
     }
 
     @Test
-    void listarMercaderiasPorIdOk() {
+    void listarMercaderiasPorIdDescendenteOk() {
         retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
     }
 
     @Test
-    void listarMercaderiasPorIdError1() {
+    void listarMercaderiasPorIdDescendenteError1() {
         retorno = s.listarMercaderiasPorIdDescendente("", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
 
@@ -59,7 +59,7 @@ public class Test05ListarMercaderiasPorIdDescendente {
     }
 
     @Test
-    void listarMercaderiasPorIdError2() {
+    void listarMercaderiasPorIdDescendenteError2() {
         retorno = s.listarMercaderiasPorIdDescendente("COD01", "X1-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
 
@@ -91,14 +91,14 @@ public class Test05ListarMercaderiasPorIdDescendente {
     }
 
     @Test
-    void listarMercaderiasPorIdError3() {
+    void listarMercaderiasPorIdDescendenteError3() {
         s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX234", "Descripción 1", false, Categoria.OTROS);
         retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
     }
 
     @Test
-    void listarMercaderiasPorIdError4() {
+    void listarMercaderiasPorIdDescendenteError4() {
         s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         retorno = s.listarMercaderiasPorIdDescendente("COD02", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());

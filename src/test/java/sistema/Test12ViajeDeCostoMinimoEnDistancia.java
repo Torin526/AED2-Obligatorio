@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Test03BuscarMercaderiaPorId {
+public class  Test12ViajeCostoMinimoDistancia{
+
     private Retorno retorno;
     private final Sistema s = new ImplementacionSistema();
 
@@ -19,12 +20,90 @@ public class Test03BuscarMercaderiaPorId {
     }
 
     @Test
-    void buscarMedicamentoOk() {
-        s.registrarMercaderia("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        retorno = s.buscarMercaderiaPorId("COD01");
+    void viajeCostoMinimoDistanciaOk() {
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        assertEquals(1, retorno.getValorInteger());
-        assertEquals("COD01;XX-001-XXX123;Descripción 1;false;Otros", retorno.getValorString());
+    }
+
+    @Test
+    void viajeCostoMinimoDistanciaError1() {
+        retorno = s.viajeCostoMinimoDistancia("", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-001-XXX123", "", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-001-XXX123", "Descripción 1", false, null);
+        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
+
+
+        retorno = s.viajeCostoMinimoDistancia(null, "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", null, "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-001-XXX123", null, false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+
+
+        retorno = s.viajeCostoMinimoDistancia("  ", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "   ", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-001-XXX123", "   ", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+    }
+
+    @Test
+    void viajeCostoMinimoDistanciaError2() {
+        retorno = s.viajeCostoMinimoDistancia("COD01", "X1-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "1X-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "11-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-A01-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-0B1-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-00C-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-001-XX111X123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "X1X-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-0001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+    }
+
+    @Test
+    void viajeCostoMinimoDistanciaError3() {
+        s.viajeCostoMinimoDistancia("COD01", "XX-001-XXX234", "Descripción 1", false, Categoria.OTROS);
+        retorno = s.viajeCostoMinimoDistancia("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+    }
+
+    @Test
+    void viajeCostoMinimoDistanciaError4() {
+        s.viajeCostoMinimoDistancia("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        retorno = s.viajeCostoMinimoDistancia("COD02", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
     }
 
 }

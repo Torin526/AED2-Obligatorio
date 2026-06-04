@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Test03BuscarMercaderiaPorId {
+public class Test07listarMercaderiasPorCodigoAscendente {
     private Retorno retorno;
     private final Sistema s = new ImplementacionSistema();
 
@@ -18,9 +18,13 @@ public class Test03BuscarMercaderiaPorId {
         s.inicializarSistema(10);
     }
 
+
+
+
+
     @Test
-    void buscarMedicamentoOk() {
-        s.registrarMercaderia("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+    void listarMercaderiasPorCodigoAscendenteOk() {
+        s.listarMercaderiasPorCodigoAscendente("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         retorno = s.buscarMercaderiaPorId("COD01");
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
         assertEquals(1, retorno.getValorInteger());
