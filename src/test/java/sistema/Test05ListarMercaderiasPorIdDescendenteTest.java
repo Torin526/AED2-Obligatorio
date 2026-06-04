@@ -18,90 +18,60 @@ public class Test05ListarMercaderiasPorIdDescendenteTest {
     }
 
     @Test
-    void listarMercaderiasPorIdDescendenteOk() {
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+    void listarMercaderiasPorIdDescendenteListaVacia() {
+        // Caso de borde: No hay ninguna mercadería en el sistema
+        retorno = s.listarMercaderiasPorIdDescendente();
+
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+        assertEquals("", retorno.getValorString());
     }
 
     @Test
-    void listarMercaderiasPorIdDescendenteError1() {
-        retorno = s.listarMercaderiasPorIdDescendente("", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
+    void listarMercaderiasPorIdDescendenteUnSoloElemento() {
+        // Caso límite: Un único elemento registrado (no debe incluir el separador "|")
+        s.registrarMercaderia("12345", "MN-001-ABC123", "Batería de cocina", false, Categoria.OTROS);
 
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
+        retorno = s.listarMercaderiasPorIdDescendente();
 
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX123", "", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX123", "Descripción 1", false, null);
-        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
-
-
-        retorno = s.listarMercaderiasPorIdDescendente(null, "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", null, "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX123", null, false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-
-        retorno = s.listarMercaderiasPorIdDescendente("  ", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "   ", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX123", "   ", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+        assertEquals("12345;MN-001-ABC123;Batería de cocina;false;OTROS", retorno.getValorString());
     }
 
     @Test
-    void listarMercaderiasPorIdDescendenteError2() {
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "X1-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+    void listarMercaderiasPorIdDescendenteOkVarias() {
+        // Caso estándar exitoso: Se ingresan en desorden y debe ordenarlas de Mayor a Menor (descendente)
+        s.registrarMercaderia("11111", "XX-001-AAA111", "Mercaderia A", true, Categoria.OTROS);
+        s.registrarMercaderia("33333", "XX-001-CCC333", "Mercaderia C", false, Categoria.OTROS);
+        s.registrarMercaderia("22222", "XX-001-BBB222", "Mercaderia B", false, Categoria.OTROS);
 
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "1X-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+        retorno = s.listarMercaderiasPorIdDescendente();
 
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "11-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
 
+        // Estricto orden lexicográfico decreciente: 33333 -> 22222 -> 11111
+        String esperado = "33333;XX-001-CCC333;Mercaderia C;false;OTROS|" +
+                "22222;XX-001-BBB222;Mercaderia B;false;OTROS|" +
+                "11111;XX-001-AAA111;Mercaderia A;true;OTROS";
 
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-A01-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-0B1-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-00C-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XX111X123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "X1X-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-0001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+        assertEquals(esperado, retorno.getValorString());
     }
 
     @Test
-    void listarMercaderiasPorIdDescendenteError3() {
-        s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX234", "Descripción 1", false, Categoria.OTROS);
-        retorno = s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-    }
+    void listarMercaderiasPorIdDescendenteLimiteCapacidad() {
+        // Caso límite: El sistema está lleno (alcanza el tope de la inicialización)
+        s.registrarMercaderia("A", "XX-001-AAA111", "M1", false, Categoria.OTROS);
+        s.registrarMercaderia("C", "XX-001-CCC333", "M3", false, Categoria.OTROS);
+        s.registrarMercaderia("B", "XX-001-BBB222", "M2", false, Categoria.OTROS);
 
-    @Test
-    void listarMercaderiasPorIdDescendenteError4() {
-        s.listarMercaderiasPorIdDescendente("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        retorno = s.listarMercaderiasPorIdDescendente("COD02", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        retorno = s.listarMercaderiasPorIdDescendente();
+
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+
+        String esperado = "C;XX-001-CCC333;M3;false;OTROS|" +
+                "B;XX-001-BBB222;M2;false;OTROS|" +
+                "A;XX-001-AAA111;M1;false;OTROS";
+
+        assertEquals(esperado, retorno.getValorString());
     }
 
 }

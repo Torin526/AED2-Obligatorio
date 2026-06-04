@@ -19,89 +19,52 @@ public class Test04ListarMercaderiasPorIdAscendenteTest {
 
     @Test
     void listarMercaderiasPorIdAscendenteOk() {
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        s.registrarMercaderia("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        s.registrarMercaderia("COD02", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        s.registrarMercaderia("COD06", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        retorno = s.listarMercaderiasPorIdAscendente();
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+        assertEquals("COD01;XX-001-XXX123;Descripción 1;false;OTROS|COD02;XX-001-XXX123;Descripción 1;false;OTROS|" +
+                "COD06;XX-001-XXX123;Descripción 1;false;OTROS", retorno.getValorString());
     }
 
     @Test
-    void listarMercaderiasPorIdAscendenteError1() {
-        retorno = s.listarMercaderiasPorIdAscendente("", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
+    void listarMercaderiasPorIdAscendenteListaVacia() {
+        // Escenario borde: El sistema se inicializa pero no tiene ninguna mercadería registrada
+        retorno = s.listarMercaderiasPorIdAscendente();
 
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-001-XXX123", "", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-001-XXX123", "Descripción 1", false, null);
-        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
-
-
-        retorno = s.listarMercaderiasPorIdAscendente(null, "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", null, "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-001-XXX123", null, false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-
-        retorno = s.listarMercaderiasPorIdAscendente("  ", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "   ", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-001-XXX123", "   ", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+        // Debe devolver un String vacío (o según indique la letra si lleva alguna estructura)
+        assertEquals("", retorno.getValorString());
     }
 
     @Test
-    void listarMercaderiasPorIdAscendenteError2() {
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "X1-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+    void listarMercaderiasPorIdAscendenteUnSoloElemento() {
+        // Escenario borde: Hay un solo elemento, por lo tanto no debe llevar el separador "|"
+        s.registrarMercaderia("12345", "MN-001-ABC123", "Batería de cocina", false, Categoria.OTROS);
 
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "1X-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+        retorno = s.listarMercaderiasPorIdAscendente();
 
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "11-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-A01-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-0B1-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-00C-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-001-XX111X123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "X1X-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-0001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+        assertEquals("12345;MN-001-ABC123;Batería de cocina;false;OTROS", retorno.getValorString());
     }
 
     @Test
-    void listarMercaderiasPorIdAscendenteError3() {
-        s.listarMercaderiasPorIdAscendente("COD01", "XX-001-XXX234", "Descripción 1", false, Categoria.OTROS);
-        retorno = s.listarMercaderiasPorIdAscendente("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-    }
+    void listarMercaderiasPorIdAscendenteValidarOrdenLexicografico() {
+        // Escenario clave: Se registran en desorden para verificar que el método realmente las ordene de forma creciente
+        s.registrarMercaderia("33333", "XX-001-AAA111", "Mercaderia C", false, Categoria.OTROS);
+        s.registrarMercaderia("11111", "XX-001-BBB222", "Mercaderia A", true, Categoria.OTROS);
+        s.registrarMercaderia("22222", "XX-001-CCC333", "Mercaderia B", false, Categoria.OTROS);
 
-    @Test
-    void listarMercaderiasPorIdAscendenteError4() {
-        s.listarMercaderiasPorIdAscendente("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        retorno = s.listarMercaderiasPorIdAscendente("COD02", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        retorno = s.listarMercaderiasPorIdAscendente();
+
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+        // El string esperado debe quedar estrictamente en orden: 11111 -> 22222 -> 33333
+        String esperado = "11111;XX-001-BBB222;Mercaderia A;true;OTROS|" +
+                "22222;XX-001-CCC333;Mercaderia B;false;OTROS|" +
+                "33333;XX-001-AAA111;Mercaderia C;false;OTROS";
+
+        assertEquals(esperado, retorno.getValorString());
     }
 
 }

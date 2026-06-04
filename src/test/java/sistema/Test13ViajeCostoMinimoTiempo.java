@@ -17,93 +17,117 @@ public class Test13ViajeCostoMinimoTiempo {
     @BeforeEach
     public void setUp() {
         s.inicializarSistema(10);
+        // Registramos los centros logísticos para armar la red de caminos
+        s.registrarCentroLogistico("A", "Centro A", "MVD", "Dir A");
+        s.registrarCentroLogistico("B", "Centro B", "CAN", "Dir B");
+        s.registrarCentroLogistico("C", "Centro C", "MAL", "Dir C");
+        s.registrarCentroLogistico("D", "Centro D", "SJO", "Dir D");
+        s.registrarCentroLogistico("E", "Centro E", "COL", "Dir E");
+    }
+
+
+    @Test
+    void viajeCostoMinimoTiempoOkConexionDirecta() {
+        // Caso límite: Existe una única conexión directa entre ambos puntos
+        s.registrarConexion("A", "B", 100, 45); // 45 minutos
+
+        retorno = s.viajeCostoMinimoTiempo("A", "B");
+
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+        // Debe retornar la suma de los minutos en valorEntero
+        assertEquals(45, retorno.getValorEntero());
+
+        // Formato esperado de Origen y Destino separados por "|"
+        String esperado = "A;Centro A;MVD;Dir A|B;Centro B;CAN;Dir B";
+        assertEquals(esperado, retorno.getValorString());
     }
 
     @Test
-    void viajeCostoMinimoTiempoOk() {
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+    void viajeCostoMinimoTiempoOkSeleccionaCaminoMasRapido() {
+        // Caso estándar de Dijkstra por Tiempo: Hay dos rutas para ir de A a D.
+        // Ruta 1 (Directa pero lenta en tiempo): A -> D (Distancia = 30 km, Tiempo = 80 min)
+        s.registrarConexion("A", "D", 30, 80);
+
+        // Ruta 2 (Más larga en kilómetros, pero por autopista va mucho más rápido):
+        // A -> B (10 min) -> C (15 min) -> D (20 min) = Total 45 minutos
+        s.registrarConexion("A", "B", 50, 10);
+        s.registrarConexion("B", "C", 60, 15);
+        s.registrarConexion("C", "D", 40, 20);
+
+        retorno = s.viajeCostoMinimoTiempo("A", "D");
+
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+        // Dijkstra debe priorizar el tiempo mínimo (10 + 15 + 20 = 45) a pesar de tener más conexiones y km
+        assertEquals(45, retorno.getValorInteger());
+
+        String esperado = "A;Centro A;MVD;Dir A|" +
+                "B;Centro B;CAN;Dir B|" +
+                "C;Centro C;MAL;Dir C|" +
+                "D;Centro D;SJO;Dir D";
+        assertEquals(esperado, retorno.getValorString());
     }
+
+    @Test
+    void viajeCostoMinimoTiempoOkMismoOrigenYDestino() {
+        // Caso de borde extremo: El origen y el destino coinciden.
+        // El tiempo invertido debe ser 0 y el string contener solo los datos de ese centro.
+        retorno = s.viajeCostoMinimoTiempo("A", "A");
+
+        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+        assertEquals(0, retorno.getValorInteger());
+        assertEquals("A;Centro A;MVD;Dir A", retorno.getValorString());
+    }
+
+
 
     @Test
     void viajeCostoMinimoTiempoError1() {
-        retorno = s.viajeCostoMinimoTiempo("", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        // Casos de borde: Parámetros nulos
+        retorno = s.viajeCostoMinimoTiempo(null, "B");
         assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
 
-        retorno = s.viajeCostoMinimoTiempo("COD01", "", "Descripción 1", false, Categoria.OTROS);
+        retorno = s.viajeCostoMinimoTiempo("A", null);
         assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
 
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-001-XXX123", "", false, Categoria.OTROS);
+        // Casos de borde: Parámetros vacíos o con espacios
+        retorno = s.viajeCostoMinimoTiempo("", "B");
         assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
 
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-001-XXX123", "Descripción 1", false, null);
+        retorno = s.viajeCostoMinimoTiempo("A", "   ");
         assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
-
-
-        retorno = s.viajeCostoMinimoTiempo(null, "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", null, "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-001-XXX123", null, false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-
-        retorno = s.viajeCostoMinimoTiempo("  ", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "   ", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-001-XXX123", "   ", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
     }
 
+    // =========================================================================
+    // TESTS PARA ERROR 2 y 3: Inexistencia de origen o destino
+    // =========================================================================
+
     @Test
-    void viajeCostoMinimoTiempoError2() {
-        retorno = s.viajeCostoMinimoTiempo("COD01", "X1-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "1X-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "11-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-A01-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-0B1-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-00C-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-001-XX111X123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "X1X-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-0001-XXX123", "Descripción 1", false, Categoria.OTROS);
+    void viajeCostoMinimoTiempoError2OrigenNoExiste() {
+        // El destino existe pero el origen no está registrado en el sistema
+        retorno = s.viajeCostoMinimoTiempo("FANTASMA", "B");
         assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
     }
 
     @Test
-    void viajeCostoMinimoTiempoError3() {
-        s.viajeCostoMinimoTiempo("COD01", "XX-001-XXX234", "Descripción 1", false, Categoria.OTROS);
-        retorno = s.viajeCostoMinimoTiempo("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+    void viajeCostoMinimoTiempoError3DestinoNoExiste() {
+        // El origen existe pero el destino no está registrado en el sistema
+        retorno = s.viajeCostoMinimoTiempo("A", "FANTASMA");
+        assertEquals(Retorno.Resultado.ERROR_3, retorno.getResultado());
     }
 
+    // =========================================================================
+    // TESTS PARA ERROR 4: No existe ningún camino posible
+    // =========================================================================
+
     @Test
-    void viajeCostoMinimoTiempoError4() {
-        s.viajeCostoMinimoTiempo("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        retorno = s.viajeCostoMinimoTiempo("COD02", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
+    void viajeCostoMinimoTiempoError4NoHayCamino() {
+        // El centro E está completamente desconectado de los demás
+        s.registrarConexion("A", "B", 30, 20);
+        s.registrarConexion("B", "C", 25, 15);
+
+        // Intentamos ir de A hacia E. Al no existir ruta, debe retornar ERROR_4
+        retorno = s.viajeCostoMinimoTiempo("A", "E");
+        assertEquals(Retorno.Resultado.ERROR_4, retorno.getResultado());
     }
 
 }
