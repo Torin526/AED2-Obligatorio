@@ -26,9 +26,14 @@ public class ListaImp<T> implements ILista<T> {
     public void insertarAlFinal(T dato) {
         Nodo<T> nuevoNodo = new Nodo<T>(dato, null);
         cant++;
-        this.fin.setSig(nuevoNodo);
-        this.fin = nuevoNodo;
 
+        if (this.inicio == null) {
+            this.inicio = nuevoNodo;
+            this.fin = nuevoNodo;
+        } else {
+            this.fin.setSig(nuevoNodo);
+            this.fin = nuevoNodo;
+        }
     }
 
 

@@ -41,7 +41,7 @@ public class Grafo implements IGrafo {
         this.cantActual = 0;
 
         // Casteamos. Necesario en java, sino se rompe
-        this.vertices = (CentroLogistico[]) new Object[tope];
+        this.vertices = new CentroLogistico[tope];
         this.matAdy = new Arista[tope][tope];
 
         for (int i = 0; i < tope; i++) {

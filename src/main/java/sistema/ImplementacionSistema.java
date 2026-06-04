@@ -29,7 +29,7 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error1("El máximo de centros debe ser mayor a 3");
         }
 
-
+        this.arbolesPorCategoria = new ListaImp<ABB<Mercaderia>>();
         this.grafoConCentros = new Grafo(maxCentros, true);
         this.grafoConCentros.setTope(maxCentros);
         this.grafoConCentros.setCantActual(0);
@@ -38,6 +38,7 @@ public class ImplementacionSistema implements Sistema {
         arbolGralMercaderiaPorCodigo = new ABB<WMercaderiaPorCodigo>();
         crearArbolesEnCadaCategoria(arbolesPorCategoria);
         return Retorno.ok("El sistema pudo ser inicializado correctamente");
+
 
     }
 
@@ -404,6 +405,9 @@ public class ImplementacionSistema implements Sistema {
     }
 
     private void crearArbolesEnCadaCategoria(ListaImp<ABB<Mercaderia>> lista) {
+
+
+
 
         for (Categoria cat : Categoria.values()) {
 
