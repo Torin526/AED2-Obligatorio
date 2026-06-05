@@ -64,7 +64,7 @@ public class ImplementacionSistema implements Sistema {
         Mercaderia mercaderiaParaChequeoXCP = new Mercaderia(null, codigo, null, false, null);
         WMercaderiaPorCodigo wrapperFantasma = new WMercaderiaPorCodigo(mercaderiaParaChequeoXCP);
         if (arbolGralMercaderiaPorCodigo.pertenece(wrapperFantasma)) {
-            return Retorno.error3("Ya existe una mercadería con ese Id");
+            return Retorno.error4("Ya existe una mercadería con ese codigo");
             //||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
             //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
             // VER SI ESTÁ BIEN ESTA IMPLEMENTACIÓN!!!!!!!!!!!!!!!!!!!!!

@@ -19,13 +19,13 @@ public class Test04ListarMercaderiasPorIdAscendenteTest {
 
     @Test
     void listarMercaderiasPorIdAscendenteOk() {
-        s.registrarMercaderia("COD01", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
-        s.registrarMercaderia("COD02", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
+        s.registrarMercaderia("COD01", "XX-001-XXX120", "Descripción 1", false, Categoria.OTROS);
+        s.registrarMercaderia("COD02", "XX-001-XXX121", "Descripción 1", false, Categoria.OTROS);
         s.registrarMercaderia("COD06", "XX-001-XXX123", "Descripción 1", false, Categoria.OTROS);
         retorno = s.listarMercaderiasPorIdAscendente();
+        String aDevolver ="COD01;XX-001-XXX120;Descripción 1;false;Otros|COD02;XX-001-XXX121;Descripción 1;false;Otros|COD06;XX-001-XXX123;Descripción 1;false;Otros";
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        assertEquals("COD01;XX-001-XXX123;Descripción 1;false;OTROS|COD02;XX-001-XXX123;Descripción 1;false;OTROS|" +
-                "COD06;XX-001-XXX123;Descripción 1;false;OTROS", retorno.getValorString());
+        assertEquals(aDevolver, retorno.getValorString());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class Test04ListarMercaderiasPorIdAscendenteTest {
         retorno = s.listarMercaderiasPorIdAscendente();
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        assertEquals("12345;MN-001-ABC123;Batería de cocina;false;OTROS", retorno.getValorString());
+        assertEquals("12345;MN-001-ABC123;Batería de cocina;false;Otros", retorno.getValorString());
     }
 
     @Test
@@ -60,9 +60,7 @@ public class Test04ListarMercaderiasPorIdAscendenteTest {
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
         // El string esperado debe quedar estrictamente en orden: 11111 -> 22222 -> 33333
-        String esperado = "11111;XX-001-BBB222;Mercaderia A;true;OTROS|" +
-                "22222;XX-001-CCC333;Mercaderia B;false;OTROS|" +
-                "33333;XX-001-AAA111;Mercaderia C;false;OTROS";
+        String esperado = "11111;XX-001-BBB222;Mercaderia A;true;Otros|22222;XX-001-CCC333;Mercaderia B;false;Otros|33333;XX-001-AAA111;Mercaderia C;false;Otros";
 
         assertEquals(esperado, retorno.getValorString());
     }
