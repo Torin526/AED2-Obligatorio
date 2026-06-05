@@ -34,7 +34,7 @@ public class Test05ListarMercaderiasPorIdDescendenteTest {
         retorno = s.listarMercaderiasPorIdDescendente();
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        assertEquals("12345;MN-001-ABC123;Batería de cocina;false;OTROS", retorno.getValorString());
+        assertEquals("12345;MN-001-ABC123;Batería de cocina;false;Otros", retorno.getValorString());
     }
 
     @Test
@@ -49,9 +49,9 @@ public class Test05ListarMercaderiasPorIdDescendenteTest {
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
 
         // Estricto orden lexicográfico decreciente: 33333 -> 22222 -> 11111
-        String esperado = "33333;XX-001-CCC333;Mercaderia C;false;OTROS|" +
-                "22222;XX-001-BBB222;Mercaderia B;false;OTROS|" +
-                "11111;XX-001-AAA111;Mercaderia A;true;OTROS";
+        String esperado = "33333;XX-001-CCC333;Mercaderia C;false;Otros|" +
+                "22222;XX-001-BBB222;Mercaderia B;false;Otros|" +
+                "11111;XX-001-AAA111;Mercaderia A;true;Otros";
 
         assertEquals(esperado, retorno.getValorString());
     }
@@ -67,9 +67,9 @@ public class Test05ListarMercaderiasPorIdDescendenteTest {
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
 
-        String esperado = "C;XX-001-CCC333;M3;false;OTROS|" +
-                "B;XX-001-BBB222;M2;false;OTROS|" +
-                "A;XX-001-AAA111;M1;false;OTROS";
+        String esperado = "C;XX-001-CCC333;M3;false;Otros|" +
+                "B;XX-001-BBB222;M2;false;Otros|" +
+                "A;XX-001-AAA111;M1;false;Otros";
 
         assertEquals(esperado, retorno.getValorString());
     }

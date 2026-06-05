@@ -3,7 +3,7 @@ package estructuras.Lista;
 public interface ILista<T> {
 
     //Agrega un elemento al inicio
-    public void insertar(T dato);
+    public void insertarAlInicio(T dato);
 
     //retorna la cantidad de elementos
     public int largo();

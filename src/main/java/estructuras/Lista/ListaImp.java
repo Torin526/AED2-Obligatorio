@@ -12,7 +12,7 @@ public class ListaImp<T> implements ILista<T> {
     }
 
     @Override
-    public void insertar(T dato) {
+    public void insertarAlInicio(T dato) {
 
         Nodo<T> nuevoNodo = new Nodo<T>(dato, inicio);
         cant++;

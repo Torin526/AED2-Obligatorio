@@ -151,16 +151,19 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error1("No puede haber campos vacíos o en null");
         }
         Mercaderia mercaderiaParaChequeo = new Mercaderia(null, codigo, null, false, null);
+        //ARRANCA EN UNO PORQUE ARANCAMOS POR LA RAIZ Y ESE VA A ESTAR VISITADO O RECORRIDO.
+        int[] cont=new int[1];
+
         WMercaderiaPorCodigo wMercaderiaParaChequeo = new WMercaderiaPorCodigo(mercaderiaParaChequeo);
-        Mercaderia mercaderiaAMostrar = obtenerMercaderíaPorCodigo(wMercaderiaParaChequeo, arbolGralMercaderiaPorCodigo.getRaiz());
+        Mercaderia mercaderiaAMostrar = obtenerMercaderíaPorCodigo(wMercaderiaParaChequeo, arbolGralMercaderiaPorCodigo.getRaiz(), cont);
         if (mercaderiaAMostrar == null) {
             return Retorno.error2("No existe una mercadería con ese código");
 
         }
 
-
-        return Retorno.ok(mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPostal() + ";" + mercaderiaAMostrar.getDescripcion()
-                + ";" + mercaderiaAMostrar.isFragil() + ";" + mercaderiaAMostrar.getCategoria().getTexto());
+        String ret=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPostal() + ";" + mercaderiaAMostrar.getDescripcion()
+                + ";" + mercaderiaAMostrar.isFragil() + ";" + mercaderiaAMostrar.getCategoria().getTexto();
+        return Retorno.ok(cont[0],ret);
 
     }
 
@@ -434,17 +437,19 @@ public class ImplementacionSistema implements Sistema {
 
     }
 
-    private Mercaderia obtenerMercaderíaPorCodigo(WMercaderiaPorCodigo mercaderia, NodoGen<WMercaderiaPorCodigo> nodo) {
+    private Mercaderia obtenerMercaderíaPorCodigo(WMercaderiaPorCodigo mercaderia, NodoGen<WMercaderiaPorCodigo> nodo, int[] cont) {
 
         if (nodo == null) {
             return null;
         } else {
+            cont[0]++;
+
             if (nodo.getDato().compareTo(mercaderia) == 0) {
                 return nodo.getDato().getMercaderia();
             } else if (nodo.getDato().compareTo(mercaderia) < 0) {
-                return obtenerMercaderíaPorCodigo(mercaderia, nodo.getDer());
+                return obtenerMercaderíaPorCodigo(mercaderia, nodo.getDer(), cont);
             } else {
-                return obtenerMercaderíaPorCodigo(mercaderia, nodo.getIzq());
+                return obtenerMercaderíaPorCodigo(mercaderia, nodo.getIzq(), cont);
             }
         }
 
@@ -457,7 +462,7 @@ public class ImplementacionSistema implements Sistema {
             return;
         } else {
             cargarListaAsc(listaMer, nodo.getDer());
-            listaMer.insertar(nodo.getDato());
+            listaMer.insertarAlInicio(nodo.getDato());
             cargarListaAsc(listaMer, nodo.getIzq());
 
         }
@@ -468,9 +473,9 @@ public class ImplementacionSistema implements Sistema {
         if (nodo == null) {
             return;
         } else {
-            cargarListaAsc(listaMer, nodo.getIzq());
-            listaMer.insertar(nodo.getDato());
-            cargarListaAsc(listaMer, nodo.getDer());
+            cargarListaDesc(listaMer, nodo.getIzq());
+            listaMer.insertarAlInicio(nodo.getDato());
+            cargarListaDesc(listaMer, nodo.getDer());
 
         }
 

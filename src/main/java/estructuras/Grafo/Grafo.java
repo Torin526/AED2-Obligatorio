@@ -130,7 +130,7 @@ public class Grafo implements IGrafo {
         if (posVertice != -1) {
             for (int i = 0; i < this.tope; i++) {
                 if (this.matAdy[posVertice][i].isExiste()) {
-                    adyacentes.insertar(this.vertices[i]);
+                    adyacentes.insertarAlInicio(this.vertices[i]);
                 }
             }
         }
@@ -144,7 +144,7 @@ public class Grafo implements IGrafo {
         if (posVertice != -1) {
             for (int i = 0; i < this.tope; i++) {
                 if (this.matAdy[i][posVertice].isExiste()) {
-                    incidentes.insertar(this.vertices[i]);
+                    incidentes.insertarAlInicio(this.vertices[i]);
                 }
             }
         }
@@ -182,7 +182,7 @@ public class Grafo implements IGrafo {
             Tupla tupla = cola.desencolar();
             int pos = tupla.getPos();
             int nivel = tupla.getNivel();
-            listaRet.insertar(vertices[pos]);
+            listaRet.insertarAlInicio(vertices[pos]);
             if (nivel < cantidad) {
                 for (int j = 0; j < tope; j++) {
                     if (matAdy[pos][j].isExiste() && !visitados[j]) {
@@ -265,11 +265,11 @@ public class Grafo implements IGrafo {
         int posOrigen = obtenerPosVertice(origen);
 
         while (posActual != posOrigen) {
-            camino.insertar(vertices[posActual]); // Lo mete en una lista
+            camino.insertarAlInicio(vertices[posActual]); // Lo mete en una lista
             CentroLogistico nomAnterior = anteriores[posActual];
             posActual = obtenerPosVertice(nomAnterior);
         }
-        camino.insertar(vertices[posOrigen]); // Mete el origen al final
+        camino.insertarAlInicio(vertices[posOrigen]); // Mete el origen al final
 
         return camino;
     }
