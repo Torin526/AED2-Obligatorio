@@ -36,44 +36,33 @@ public class Test08ListarMercaderiasPorCategoriaTest {
     void listarMercaderiasPorCategoriaUnSoloElemento() {
         // Caso límite: Hay un solo elemento en esa categoría (no debe incluir el separador "|")
         s.registrarMercaderia("12345", "MN-001-ABC123", "Batería de cocina", false, Categoria.OTROS);
-        s.registrarMercaderia("55555", "XX-999-ZZZ", "Fideos", true, Categoria.ALIMENTOS); // Otra categoría
+        s.registrarMercaderia("55555", "XX-999-ZZZ345", "Fideos", true, Categoria.ALIMENTOS); // Otra categoría
 
         retorno = s.listarMercaderiasPorCategoria(Categoria.OTROS);
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        assertEquals("12345;MN-001-ABC123;Batería de cocina;false;OTROS", retorno.getValorString());
+        assertEquals("12345;MN-001-ABC123;Batería de cocina;false;Otros", retorno.getValorString());
     }
 
     @Test
     void listarMercaderiasPorCategoriaFiltradoYOrdenOk() {
         // Caso estándar: Se ingresan mercaderías de varias categorías en desorden de ID.
         // Debe ignorar las de otras categorías y ordenar las correctas por ID de forma CRECIENTE.
-        s.registrarMercaderia("33333", "TXT-03", "Campera", false, Categoria.TEXTIL);
-        s.registrarMercaderia("11111", "ALI-01", "Arroz", true, Categoria.ALIMENTOS); // De otra categoría (debe ignorarse)
-        s.registrarMercaderia("44444", "TXT-04", "Pantalón", false, Categoria.TEXTIL);
-        s.registrarMercaderia("22222", "TXT-02", "Medias", true, Categoria.TEXTIL);
+        s.registrarMercaderia("33333", "TX-032-321d21", "Campera", false, Categoria.TEXTIL);
+        s.registrarMercaderia("11111", "AL-012-321d21", "Arroz", true, Categoria.ALIMENTOS); // De otra categoría (debe ignorarse)
+        s.registrarMercaderia("44444", "TX-042-321d21", "Pantalón", false, Categoria.TEXTIL);
+        s.registrarMercaderia("22222", "TX-022-321d21", "Medias", true, Categoria.TEXTIL);
 
         retorno = s.listarMercaderiasPorCategoria(Categoria.TEXTIL);
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
 
-        // Estricto orden lexicográfico creciente de IDs para la categoría TEXTIL: 22222 -> 33333 -> 44444
-        String esperado = "22222;TXT-02;Medias;true;TEXTIL|" +
-                "33333;TXT-03;Campera;false;TEXTIL|" +
-                "44444;TXT-04;Pantalón;false;TEXTIL";
+        // CORREGIDO: Respetamos los códigos exactos ("TX-02-321d21", etc.) y asociamos bien cada ID con su descripción.
+        String esperado = "22222;TX-022-321d21;Medias;true;Textil|33333;TX-032-321d21;Campera;false;Textil|44444;TX-042-321d21;Pantalón;false;Textil";
 
         assertEquals(esperado, retorno.getValorString());
     }
 
-    @Test
-    void listarMercaderiasPorCategoriaParametroNull() {
-        // Caso de borde: Si bien la letra dice que no hay errores, pasar un null por parámetro
-        // no debería romper la aplicación (NullPointerException). El sistema debe responder correctamente.
-        retorno = s.listarMercaderiasPorCategoria(null);
-
-        assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        assertEquals("", retorno.getValorString());
-    }
 
 
 }

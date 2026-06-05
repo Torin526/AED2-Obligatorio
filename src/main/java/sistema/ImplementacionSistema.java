@@ -205,8 +205,8 @@ public class ImplementacionSistema implements Sistema {
 
         while (actual != null) {
             Mercaderia m = actual.getDato();
-            ret += m.getId() + ";" + m.getCodigoPostal() + ";" + m.getDescripcion() + ";" +m.isFragil() + ";" + m.getCategoria() + "|";
-            actual.getSig();
+            ret += m.getId() + ";" + m.getCodigoPostal() + ";" + m.getDescripcion() + ";" +m.isFragil() + ";" + m.getCategoria().getTexto() + "|";
+            actual=actual.getSig();
         }
         ret=ret.substring(0, ret.length() - 1);
 

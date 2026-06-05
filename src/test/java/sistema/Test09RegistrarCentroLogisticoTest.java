@@ -15,7 +15,8 @@ public class Test09RegistrarCentroLogisticoTest {
     @BeforeEach
     public void setUp() {
         // Inicializamos con un máximo de 3 centros para facilitar las pruebas de límite de capacidad (maxCentros)
-        s.inicializarSistema(3);
+        s.inicializarSistema(4);
+
     }
 
     @Test
@@ -92,16 +93,17 @@ public class Test09RegistrarCentroLogisticoTest {
 
     @Test
     void registrarCentroLogisticoError1MaxCapacidad() {
-        // Inicializamos con tope 3 en el setUp. Registramos exactamente 3 centros (Límite máximo permitido)
+        // Inicializamos con tope 4 en el setUp. Registramos exactamente 3 centros (Límite máximo permitido)
         s.registrarCentroLogistico("CEN01", "Centro 1", "MVD", "Dir 1");
         s.registrarCentroLogistico("CEN02", "Centro 2", "CAN", "Dir 2");
-        retorno = s.registrarCentroLogistico("CEN03", "Centro 3", "MAL", "Dir 3");
+        s.registrarCentroLogistico("CEN03", "Centro 3", "LAN", "Dir 3");
+        retorno = s.registrarCentroLogistico("CEN04", "Centro 4", "MAL", "Dir 4");
 
         // El tercero todavía tiene que entrar bien (OK)
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
 
         // El cuarto centro supera la capacidad máxima (debe dar ERROR_1)
-        retorno = s.registrarCentroLogistico("CEN04", "Centro 4 (Excedente)", "SJO", "Dir 4");
+        retorno = s.registrarCentroLogistico("CEN05", "Centro 5 (Excedente)", "SJO", "Dir 5");
         assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
     }
 

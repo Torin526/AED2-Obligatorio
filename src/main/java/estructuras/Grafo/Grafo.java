@@ -62,7 +62,7 @@ public class Grafo implements IGrafo {
 
     private int obtenerPosVertice(CentroLogistico vertice) {
         for (int i = 0; i < tope; i++) {
-            if (this.vertices[i] != null && this.vertices[i].equals(vertice)) {
+            if (this.vertices[i] != null && this.vertices[i].compareTo(vertice) == 0) {
                 return i;
             }
         }
