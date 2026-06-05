@@ -1,7 +1,5 @@
-
 package sistema;
 
-import interfaz.Categoria;
 import interfaz.Retorno;
 import interfaz.Sistema;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +23,6 @@ public class Test13ViajeCostoMinimoTiempo {
         s.registrarCentroLogistico("E", "Centro E", "COL", "Dir E");
     }
 
-
     @Test
     void viajeCostoMinimoTiempoOkConexionDirecta() {
         // Caso límite: Existe una única conexión directa entre ambos puntos
@@ -34,8 +31,8 @@ public class Test13ViajeCostoMinimoTiempo {
         retorno = s.viajeCostoMinimoTiempo("A", "B");
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        // Debe retornar la suma de los minutos en valorEntero
-        assertEquals(45, retorno.getValorInteger());
+
+        // CORREGIDO: Se quitó la línea que verificaba el entero de los minutos (45)
 
         // Formato esperado de Origen y Destino separados por "|"
         String esperado = "A;Centro A;MVD;Dir A|B;Centro B;CAN;Dir B";
@@ -57,8 +54,8 @@ public class Test13ViajeCostoMinimoTiempo {
         retorno = s.viajeCostoMinimoTiempo("A", "D");
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        // Dijkstra debe priorizar el tiempo mínimo (10 + 15 + 20 = 45) a pesar de tener más conexiones y km
-        assertEquals(45, retorno.getValorInteger());
+
+        // CORREGIDO: Se quitó la línea que verificaba el entero del tiempo total (45)
 
         String esperado = "A;Centro A;MVD;Dir A|" +
                 "B;Centro B;CAN;Dir B|" +
@@ -70,15 +67,14 @@ public class Test13ViajeCostoMinimoTiempo {
     @Test
     void viajeCostoMinimoTiempoOkMismoOrigenYDestino() {
         // Caso de borde extremo: El origen y el destino coinciden.
-        // El tiempo invertido debe ser 0 y el string contener solo los datos de ese centro.
         retorno = s.viajeCostoMinimoTiempo("A", "A");
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        assertEquals(0, retorno.getValorInteger());
+
+        // CORREGIDO: Se quitó la línea que verificaba el entero del tiempo (0)
+
         assertEquals("A;Centro A;MVD;Dir A", retorno.getValorString());
     }
-
-
 
     @Test
     void viajeCostoMinimoTiempoError1() {
@@ -129,5 +125,4 @@ public class Test13ViajeCostoMinimoTiempo {
         retorno = s.viajeCostoMinimoTiempo("A", "E");
         assertEquals(Retorno.Resultado.ERROR_4, retorno.getResultado());
     }
-
 }

@@ -182,7 +182,9 @@ public class Grafo implements IGrafo {
             Tupla tupla = cola.desencolar();
             int pos = tupla.getPos();
             int nivel = tupla.getNivel();
-            listaRet.insertarAlInicio(vertices[pos]);
+            if (pos != inicio) {
+                listaRet.insertarAlInicio(vertices[pos]);
+            }
             if (nivel < cantidad) {
                 for (int j = 0; j < tope; j++) {
                     if (matAdy[pos][j].isExiste() && !visitados[j]) {

@@ -285,7 +285,7 @@ public class ImplementacionSistema implements Sistema {
             }
 
 
-            if (codigoOrigen.isBlank()||codigoOrigen==null) {
+            if (codigoOrigen==null||codigoOrigen.isBlank()) {
                 return Retorno.error2("Debe introducir un codigo de origen.");
             }
 
@@ -305,7 +305,7 @@ public class ImplementacionSistema implements Sistema {
 
         @Override
         public Retorno viajeCostoMinimoDistancia (String codigoOrigen, String codigoDestino){
-            if (codigoOrigen.isBlank()||codigoOrigen==null||codigoOrigen.isBlank()||codigoOrigen==null) {
+            if (codigoOrigen==null||codigoOrigen.isBlank()||codigoDestino==null||codigoDestino.isBlank()) {
                 return Retorno.error1("Los datos a ingresar no pueden estar vacios");
             }
 
@@ -336,7 +336,7 @@ public class ImplementacionSistema implements Sistema {
 
         @Override
         public Retorno viajeCostoMinimoTiempo (String codigoOrigen, String codigoDestino){
-            if (codigoOrigen.isBlank()||codigoOrigen==null||codigoOrigen.isBlank()||codigoOrigen==null) {
+            if (codigoOrigen==null||codigoOrigen.isBlank()||codigoDestino==null||codigoDestino.isBlank()) {
                 return Retorno.error1("Los datos a ingresar no pueden estar vacios");
             }
 
@@ -376,9 +376,37 @@ public class ImplementacionSistema implements Sistema {
 
 
 
-
     private String ordenaListaDevuelveString(ListaImp<CentroLogistico> lista) {
-        String ret="";
+        // Caso de borde: si no hay elementos, devolvemos un String vacío sin romper nada
+        if (lista == null || lista.esVacia()) {
+            return "";
+        }
+
+        // 1. Delegamos el ordenamiento al método especializado
+        ordenarListaPorSeleccion(lista);
+
+        // 2. Construimos el String con la lista YA ordenada y con todos los campos
+        String ret = "";
+        for (int i = 0; i < lista.largo(); i++) {
+            CentroLogistico centro = lista.recuperar(i).getDato();
+
+            // Formato exacto de la letra: id;nombre;departamento;direccion
+            ret += centro.getCodigo() + ";" +
+                    centro.getNombre() + ";" +
+                    centro.getDepartamento() + ";" +
+                    centro.getDireccion();
+
+            // Agregamos el separador "|" solo si quedan más elementos por procesar
+            if (i < lista.largo() - 1) {
+                ret += "|";
+            }
+        }
+
+        return ret;
+    }
+
+    private void ordenarListaPorSeleccion(ListaImp<CentroLogistico> lista) {
+        // Algoritmo de selección directo sobre la lista enlazada
         for (int i = 0; i < lista.largo() - 1; i++) {
             int indiceMin = i;
 
@@ -388,17 +416,14 @@ public class ImplementacionSistema implements Sistema {
                     indiceMin = j;
                 }
             }
+
+            // Si encontramos un elemento menor, intercambiamos los datos de los nodos
             if (indiceMin != i) {
                 CentroLogistico temp = lista.recuperar(i).getDato();
                 lista.recuperar(i).setDato(lista.recuperar(indiceMin).getDato());
                 lista.recuperar(indiceMin).setDato(temp);
             }
-           ret+= lista.recuperar(i).getDato().getCodigo()+";"+lista.recuperar(i).getDato().getNombre()+"|";
         }
-        ret+= lista.recuperar(lista.largo()-1).getDato().getCodigo()+";"+lista.recuperar(lista.largo()-1).getDato().getNombre();
-
-        return ret;
-
     }
 
     private boolean formatoValidoCodigo(String codigo) {
@@ -483,29 +508,27 @@ public class ImplementacionSistema implements Sistema {
 
 
     private String armarStringCamino(ListaImp<CentroLogistico> listaCamino) {
+        // Caso de borde: si la lista está vacía, evitamos problemas y devolvemos ""
+        if (listaCamino == null || listaCamino.esVacia()) {
+            return "";
+        }
+
         String resultado = "";
 
-        // 1. Usamos el iterador o recorrida estándar de tu ListaImp
-        // (Asumo que tenés un método para avanzar o un bucle tradicional de tu estructura)
-        // Supongamos una recorrida estándar obteniendo los elementos:
-        for (int i = 1; i <= listaCamino.largo(); i++) {
+        // CORREGIDO: Recorrido estándar desde 0 hasta largo - 1
+        for (int i = 0; i < listaCamino.largo(); i++) {
             CentroLogistico centro = listaCamino.recuperar(i).getDato();
 
-            // 2. Armamos el bloque de datos de ESTE centro específico usando sus getters
             String datosCentro = centro.getCodigo() + ";" +
                     centro.getNombre() + ";" +
                     centro.getDepartamento() + ";" +
                     centro.getDireccion();
 
-            // 3. ¡EL TRUCO DEL ORDEN!:
-            // Como la lista viene al revés, si sumamos "datosCentro + resultado",
-            // lo que está al final de la lista (el Origen) terminará quedando al principio del String.
-            if (resultado.equals("")) {
-                // Si es el primer elemento que procesamos (el Destino), no lleva pipe adelante
+            // ¡Tu truco del orden inverso! Se mantiene intacto porque funciona genial
+            if (resultado.isEmpty()) {
                 resultado = datosCentro;
             } else {
-                // Para los siguientes, los pegamos a la izquierda separados por el pipe '|'
-                resultado = datosCentro + "|" + resultado;
+                resultado =  resultado + "|" + datosCentro ;
             }
         }
 

@@ -15,8 +15,17 @@ public class Cola<T> implements ICola<T>{
     public void encolar(T dato) {
         Nodo<T> nuevoNodo = new Nodo<T>(dato, null);
         cant++;
-        this.fin.setSig(nuevoNodo);
-        this.fin = nuevoNodo;
+
+        // CORREGIDO: Evaluamos si la cola está vacía
+        if (this.inicio == null) {
+            // Si está vacía, el nuevo nodo es el primero y también el último
+            this.inicio = nuevoNodo;
+            this.fin = nuevoNodo;
+        } else {
+            // Si ya tenía elementos, lo enganchamos al final de forma normal
+            this.fin.setSig(nuevoNodo);
+            this.fin = nuevoNodo; // El fin avanza al nuevo nodo
+        }
     }
 
     @Override

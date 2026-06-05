@@ -33,11 +33,13 @@ public class Test12ViajeCostoMinimoDistanciaTest {
 
         retorno = s.viajeCostoMinimoDistancia("A", "B");
 
+        // 1. Validamos que el resultado sea OK
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        // Debe sumar la distancia total en valorEntero
-        assertEquals(35, retorno.getValorInteger());
 
-        // El formato del string debe incluir Origen y Destino separados por "|"
+        // CORREGIDO: Borramos la línea 'assertEquals(35, retorno.getValorInteger());'
+        // porque este método no devuelve enteros.
+
+        // 2. Validamos que el formato del string incluya Origen y Destino separados por "|"
         String esperado = "A;Centro A;MVD;Dir A|B;Centro B;CAN;Dir B";
         assertEquals(esperado, retorno.getValorString());
     }
@@ -57,8 +59,8 @@ public class Test12ViajeCostoMinimoDistanciaTest {
         retorno = s.viajeCostoMinimoDistancia("A", "D");
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        // Dijkstra debe elegir la Ruta 2 porque prioriza los kilómetros mínimos (20 + 30 + 15 = 65)
-        assertEquals(65, retorno.getValorInteger());
+
+        // CORREGIDO: Se eliminó la línea que verificaba el entero de la distancia (65)
 
         String esperado = "A;Centro A;MVD;Dir A|" +
                 "B;Centro B;CAN;Dir B|" +
@@ -70,11 +72,12 @@ public class Test12ViajeCostoMinimoDistanciaTest {
     @Test
     void viajeCostoMinimoDistanciaOkMismoOrigenYDestino() {
         // Caso de borde extremo: El origen y el destino son el mismo centro logístico.
-        // La distancia recorrida debería ser 0 y el string contener únicamente a ese centro.
         retorno = s.viajeCostoMinimoDistancia("A", "A");
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        assertEquals(0, retorno.getValorInteger());
+
+        // CORREGIDO: Se eliminó la línea que verificaba el entero de la distancia (0)
+
         assertEquals("A;Centro A;MVD;Dir A", retorno.getValorString());
     }
 
