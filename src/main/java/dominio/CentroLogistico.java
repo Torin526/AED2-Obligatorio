@@ -54,6 +54,9 @@ private String direccion;
 
     @Override
     public int compareTo(CentroLogistico o) {
+        if (this.codigo == null || o == null || o.codigo == null) {
+            return 0;
+        }
         return this.codigo.compareTo(o.codigo);
     }
 }

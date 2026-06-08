@@ -17,6 +17,15 @@ public class WMercaderiaPorCodigo implements Comparable<WMercaderiaPorCodigo>{
 
     @Override
     public int compareTo(WMercaderiaPorCodigo o) {
-        return this.mercaderia.getCodigoPostal().compareTo(o.getMercaderia().getCodigoPostal());
+        if (o == null || this.mercaderia == null || o.getMercaderia() == null) return 0;
+
+        String cpInterno = this.mercaderia.getCodigoPostal();
+        String cpExterno = o.getMercaderia().getCodigoPostal();
+
+        if (cpInterno == null && cpExterno == null) return 0;
+        if (cpInterno == null) return -1;
+        if (cpExterno == null) return 1;
+
+        return cpInterno.compareTo(cpExterno);
     }
 }

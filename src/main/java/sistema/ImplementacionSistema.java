@@ -47,7 +47,7 @@ public class ImplementacionSistema implements Sistema {
         //Error 1
         if (id == null || id.isBlank() || codigo == null || codigo.isBlank() ||
                 descripcion == null || descripcion.isBlank() || categoria == null) {
-            return Retorno.error1("No puede haber campos vacíos o en null");
+            return Retorno.error1("No puede haber campos vacios o en null");
         }
 
         //Error 2
@@ -58,14 +58,14 @@ public class ImplementacionSistema implements Sistema {
         //Error 3
         Mercaderia mercaderiaParaChequeoXId = new Mercaderia(id, null, null, false, null);
         if (arbolGralMercaderia.pertenece(mercaderiaParaChequeoXId)) {
-            return Retorno.error3("Ya existe una mercadería con ese Id");
+            return Retorno.error3("Ya existe una mercaderia con ese Id");
         }
 
         //Error 4
         Mercaderia mercaderiaParaChequeoXCP = new Mercaderia(null, codigo, null, false, null);
         WMercaderiaPorCodigo wrapperFantasma = new WMercaderiaPorCodigo(mercaderiaParaChequeoXCP);
         if (arbolGralMercaderiaPorCodigo.pertenece(wrapperFantasma)) {
-            return Retorno.error4("Ya existe una mercadería con ese codigo");
+            return Retorno.error4("Ya existe una mercaderia con ese codigo");
         }
 
         //Caso feliz
@@ -75,7 +75,7 @@ public class ImplementacionSistema implements Sistema {
         arbolGralMercaderiaPorCodigo.insertar(wMer);
         insertarMercaderiaEnArbolDeSuCategoria(mer);
 
-        return Retorno.ok("Mercadería ingresada correctamente");
+        return Retorno.ok("Mercaderia ingresada correctamente");
     }
 
 
@@ -86,7 +86,7 @@ public class ImplementacionSistema implements Sistema {
 
         //Error 1
         if (id == null || id.isBlank()) {
-            return Retorno.error1("No puede haber campos vacíos o en null");
+            return Retorno.error1("No puede haber campos vacios o en null");
         }
 
         Mercaderia mercaderiaParaChequeo = new Mercaderia(id, null, null, false, null);
@@ -95,7 +95,7 @@ public class ImplementacionSistema implements Sistema {
 
         //Error 2
         if (mercaderiaAMostrar == null) {
-            return Retorno.error2("No existe una mercadería con ese Id");
+            return Retorno.error2("No existe una mercaderia con ese Id");
         }
 
         //Caso feliz
@@ -122,7 +122,7 @@ public class ImplementacionSistema implements Sistema {
 
             actual = actual.getSig();
         }
-        //Hacemos así para que no se rompa si no habían Mercaderías.
+        //Hacemos asi para que no se rompa si no habian Mercaderias.
         if (salida.length() > 0) {
             salida = salida.substring(0, salida.length() - 1);
         }
@@ -146,7 +146,7 @@ public class ImplementacionSistema implements Sistema {
 
             actual = actual.getSig();
         }
-        //Hacemos así para que no se rompa si no habían Mercaderías.
+        //Hacemos asi para que no se rompa si no habian Mercaderias.
         if (salida.length() > 0) {
             salida = salida.substring(0, salida.length() - 1);
         }
@@ -159,17 +159,17 @@ public class ImplementacionSistema implements Sistema {
 
         //Error 1
         if (codigo == null || codigo.isBlank()) {
-            return Retorno.error1("No puede haber campos vacíos o en null");
+            return Retorno.error1("No puede haber campos vacios o en null");
         }
         Mercaderia mercaderiaParaChequeo = new Mercaderia(null, codigo, null, false, null);
         //ARRANCA EN UNO PORQUE ARANCAMOS POR LA RAIZ Y ESE VA A ESTAR VISITADO O RECORRIDO.
         int[] cont=new int[1];
 
         WMercaderiaPorCodigo wMercaderiaParaChequeo = new WMercaderiaPorCodigo(mercaderiaParaChequeo);
-        Mercaderia mercaderiaAMostrar = obtenerMercaderíaPorCodigo(wMercaderiaParaChequeo, arbolGralMercaderiaPorCodigo.getRaiz(), cont);
+        Mercaderia mercaderiaAMostrar = obtenerMercaderiaPorCodigo(wMercaderiaParaChequeo, arbolGralMercaderiaPorCodigo.getRaiz(), cont);
         //Error 2
         if (mercaderiaAMostrar == null) {
-            return Retorno.error2("No existe una mercadería con ese código");
+            return Retorno.error2("No existe una mercaderia con ese código");
 
         }
 
@@ -198,7 +198,7 @@ public class ImplementacionSistema implements Sistema {
 
             actual = actual.getSig();
         }
-        //Hacemos así para que no se rompa si no habían Mercaderías.
+        //Hacemos asi para que no se rompa si no habian Mercaderias.
         if (salida.length() > 0) {
             salida = salida.substring(0, salida.length() - 1);
         }
@@ -216,7 +216,7 @@ public class ImplementacionSistema implements Sistema {
         // Recuperamos el NODO de la lista que contiene el arbol
         Nodo<ABB<Mercaderia>> nodoContenedor = arbolesPorCategoria.recuperar(indiceCategoria);
 
-        // Extraemos el ÁRBOL (ABB) de mercaderías que está almacenado dentro del nodo
+        // Extraemos el ÁRBOL (ABB) de mercaderias que está almacenado dentro del nodo
         ABB<Mercaderia> arbolDeLaCategoria = nodoContenedor.getDato();
 
         //Pasamos a lista ascendente los datos del arbol.
@@ -255,14 +255,14 @@ public class ImplementacionSistema implements Sistema {
 
         //Error 2
         if (codigo == null || codigo.isBlank() || nombre == null || nombre.isBlank() || departamento == null || departamento.isBlank() || direccion == null|| direccion.isBlank()) {
-            return Retorno.error2("No puede haber campos vacíos o en null");
+            return Retorno.error2("No puede haber campos vacios o en null");
         }
 
         CentroLogistico centroAAgregar=new CentroLogistico(codigo,  nombre,  departamento,  direccion);
 
         //Error 3
         if (grafoConCentros.existeVertice(centroAAgregar)) {
-            return Retorno.error3("Ya existe una centro Logísitico con ese código");
+            return Retorno.error3("Ya existe una centro Logisitico con ese código");
 
         }
 
@@ -278,7 +278,7 @@ public class ImplementacionSistema implements Sistema {
 
         //Error 1
         if (codigoOrigen == null || codigoOrigen.isBlank() || codigoDestino == null || codigoDestino.isBlank()) {
-            return Retorno.error1("No puede haber campos vacíos o en null");
+            return Retorno.error1("No puede haber campos vacios o en null");
         }
 
 
@@ -442,30 +442,30 @@ public class ImplementacionSistema implements Sistema {
 
     private void insertarMercaderiaEnArbolDeSuCategoria(Mercaderia mer) {
 
-        //Nos quedamos con el indice de la categoria de la mercadería a agregar
+        //Nos quedamos con el indice de la categoria de la mercaderia a agregar
         int indiceCategoria = mer.getCategoria().getIndice();
 
 
-        //Buscamos y recuperamos el NODO de la lista en esa posición específica(coincide porque así fue diseñado)
+        //Buscamos y recuperamos el NODO de la lista en esa posición especifica(coincide porque asi fue diseñado)
         Nodo<ABB<Mercaderia>> nodoContenedor = arbolesPorCategoria.recuperar(indiceCategoria);
 
         //Extraemos el ÁRBOL (ABB) que está guardado adentro de ese nodo
         ABB<Mercaderia> arbolDeLaCategoria = nodoContenedor.getDato();
 
-        //Insertamos la mercadería en su árbol correspondiente
+        //Insertamos la mercaderia en su árbol correspondiente
         arbolDeLaCategoria.insertar(mer);
     }
 
     private String ordenaListaDevuelveString(ListaImp<CentroLogistico> lista) {
-        // Caso de borde: si no hay elementos, devolvemos un String vacío sin romper nada
+        // Caso de borde: si no hay elementos, devolvemos un String vacio sin romper nada
         if (lista == null || lista.esVacia()) {
             return "";
         }
 
-        // 1. Delegamos el ordenamiento al método especializado
+        // 1. Delegamos el ordenamiento al metodo realjzado
         ordenarListaPorSeleccion(lista);
 
-        // 2. Construimos el String con la lista YA ordenada y con todos los campos
+        // 2. Construimos el String con la lista ya ordenada y con todos los campos
         String ret = "";
         for (int i = 0; i < lista.largo(); i++) {
             CentroLogistico centro = lista.recuperar(i).getDato();
@@ -547,7 +547,7 @@ public class ImplementacionSistema implements Sistema {
 
 
 
-    private Mercaderia obtenerMercaderíaPorCodigo(WMercaderiaPorCodigo mercaderia, NodoGen<WMercaderiaPorCodigo> nodo, int[] cont) {
+    private Mercaderia obtenerMercaderiaPorCodigo(WMercaderiaPorCodigo mercaderia, NodoGen<WMercaderiaPorCodigo> nodo, int[] cont) {
 
         if (nodo == null) {
             return null;
@@ -557,9 +557,9 @@ public class ImplementacionSistema implements Sistema {
             if (nodo.getDato().compareTo(mercaderia) == 0) {
                 return nodo.getDato().getMercaderia();
             } else if (nodo.getDato().compareTo(mercaderia) < 0) {
-                return obtenerMercaderíaPorCodigo(mercaderia, nodo.getDer(), cont);
+                return obtenerMercaderiaPorCodigo(mercaderia, nodo.getDer(), cont);
             } else {
-                return obtenerMercaderíaPorCodigo(mercaderia, nodo.getIzq(), cont);
+                return obtenerMercaderiaPorCodigo(mercaderia, nodo.getIzq(), cont);
             }
         }
 
@@ -593,7 +593,7 @@ public class ImplementacionSistema implements Sistema {
 
 
     private String armarStringCamino(ListaImp<CentroLogistico> listaCamino) {
-        // Caso de borde: si la lista está vacía, evitamos problemas y devolvemos ""
+        // Caso de borde: si la lista está vacia, evitamos problemas y devolvemos ""
         if (listaCamino == null || listaCamino.esVacia()) {
             return "";
         }

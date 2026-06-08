@@ -47,7 +47,7 @@ public class ABB<T extends Comparable<T>> implements IABB<T> {
         return pertenece(this.raiz, valor);
     }
 
-    public boolean pertenece(NodoGen<T> nodo, T valor) {
+    private boolean pertenece(NodoGen<T> nodo, T valor) {
         if (nodo != null) {
             if (nodo.getDato().compareTo(valor) == 0) {
                 return true;
@@ -60,13 +60,11 @@ public class ABB<T extends Comparable<T>> implements IABB<T> {
         return false;
     }
 
-    @Override
-    public T borrarMinimo() {
-        return null;
-    }
+
 
     @Override
     public void listarAsc() {
+
         listarAsc(this.raiz);
     }
 
@@ -78,36 +76,25 @@ public class ABB<T extends Comparable<T>> implements IABB<T> {
         }
     }
 
-    @Override
-    public void listarDesc() {
 
-    }
 
     @Override
     public ListaImp<T> obtenerAsc() {
         ListaImp<T> lista=new ListaImp<T>();
-        obtenerAsce(lista, this.raiz);
+        obtenerAsc(lista, this.raiz);
         return lista;
     }
 
-    private void obtenerAsce(ListaImp<T> lista, NodoGen<T> nodo) {
+    private void obtenerAsc(ListaImp<T> lista, NodoGen<T> nodo) {
         if(nodo==null){
             return;
         }else {
-            obtenerAsce(lista,nodo.getIzq());
+            obtenerAsc(lista,nodo.getIzq());
             lista.insertarAlFinal(nodo.getDato());
-            obtenerAsce(lista,nodo.getDer());
+            obtenerAsc(lista,nodo.getDer());
 
         }
     }
 
-    @Override
-    public ListaImp<T> obtenerDesc() {
-        return null;
-    }
 
-    @Override
-    public void imprimirElementosDeNivel(int nivel) {
-
-    }
 }

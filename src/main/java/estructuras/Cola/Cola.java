@@ -36,10 +36,12 @@ public class Cola<T> implements ICola<T>{
 
         T dato = this.inicio.getDato();
         this.inicio = this.inicio.getSig();
+
         if (this.inicio == null) {
             this.fin = null;
         }
 
+        cant--;
         return dato;
     }
 
@@ -63,8 +65,5 @@ public class Cola<T> implements ICola<T>{
         return this.inicio.getDato();
     }
 
-    @Override
-    public void imprimirDatos() {
 
-    }
 }

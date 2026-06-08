@@ -55,13 +55,6 @@ public class AB<T> implements IAB<T> {
 
  
 
- 
-
-    @Override
-    public boolean iguales(AB<T> a) {
-        return false;
-    }
-
     @Override
     public boolean equilibrado() {
         return equilibrado(this.raiz);

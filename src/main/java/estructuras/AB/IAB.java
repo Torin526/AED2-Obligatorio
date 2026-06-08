@@ -10,7 +10,5 @@ public interface IAB<T> {
 
     boolean pertenece(T x);
 
-    boolean iguales(AB<T> a);
-
     boolean equilibrado();
 }

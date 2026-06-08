@@ -21,4 +21,11 @@ public interface IGrafo {
     boolean sonAdyacentes(CentroLogistico vOrigen, CentroLogistico vDestino);
 
     boolean existeVertice(CentroLogistico vertice);
+
+    ListaImp<CentroLogistico> bfsConNivelYCantidadDeNiveles(CentroLogistico vert, int cantidad);
+
+    ListaImp<CentroLogistico> obtenerCaminoMasCorto(CentroLogistico origen, CentroLogistico destino, String criterio, int[] contador);
+
+    CentroLogistico obtenerVerticePorCodigo(String codigo);
+
 }

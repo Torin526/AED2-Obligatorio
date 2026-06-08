@@ -54,14 +54,15 @@ public class Conexion {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Conexion conexion)) return false;
-        return Objects.equals(codOrigen, conexion.codOrigen) && Objects.equals(codDestino, conexion.codDestino);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) {
+            return false;}
+
+        Conexion conexion = (Conexion) o;
+        return Objects.equals(codOrigen, conexion.codOrigen) &&
+                Objects.equals(codDestino, conexion.codDestino);
     }
 
-/*      @Override
-    public int hashCode() {
-      return Objects.hash(codOrigen, codDestino);
-  }
-  */
+
 
 }

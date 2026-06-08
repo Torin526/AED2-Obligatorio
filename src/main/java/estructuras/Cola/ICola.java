@@ -8,10 +8,9 @@ public interface ICola<T> {
 
     boolean esVacia();
 
-
     int cantElementos();
 
     T frente(); //simil top devolvemos el primer elemento de nuestra cola
 
-    void imprimirDatos();
+
 }

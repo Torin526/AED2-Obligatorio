@@ -25,5 +25,6 @@ public interface ILista<T> {
     //Retorna true si la lista esta vacia
     public boolean esVacia();
 
+    public void modificarEnPosicion(int pos, T dato);
 
 }

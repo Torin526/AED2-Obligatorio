@@ -7,18 +7,12 @@ public interface IABB<T> {
 
     boolean pertenece(T valor);
 
-    T borrarMinimo();
-
     void listarAsc();
-
-    void listarDesc();
 
     ListaImp<T> obtenerAsc();
 
-    ListaImp<T> obtenerDesc();
 
-    void imprimirElementosDeNivel(int nivel);
 
-    //boolean existe(int id);
+
 
 }
