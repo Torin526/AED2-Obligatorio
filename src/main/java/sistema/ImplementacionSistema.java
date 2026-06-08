@@ -91,15 +91,16 @@ public class ImplementacionSistema implements Sistema {
         }
 
         Mercaderia mercaderiaParaChequeo = new Mercaderia(id, null, null, false, null);
-        Mercaderia mercaderiaAMostrar = obtenerMercaderíaPorId(mercaderiaParaChequeo, arbolGralMercaderia.getRaiz());
+        int[] contador=new int[1];
+        Mercaderia mercaderiaAMostrar = obtenerMercaderiaPorId(mercaderiaParaChequeo, arbolGralMercaderia.getRaiz(),contador);
         if (mercaderiaAMostrar == null) {
             return Retorno.error2("No existe una mercadería con ese Id");
 
         }
+String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPostal() + ";" + mercaderiaAMostrar.getDescripcion()
+        + ";" + mercaderiaAMostrar.isFragil() + ";" + mercaderiaAMostrar.getCategoria().getTexto();
 
-
-        return Retorno.ok(mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPostal() + ";" + mercaderiaAMostrar.getDescripcion()
-                + ";" + mercaderiaAMostrar.isFragil() + ";" + mercaderiaAMostrar.getCategoria().getTexto());
+        return Retorno.ok(contador[0],retorna);
 
     }
 
@@ -319,8 +320,8 @@ public class ImplementacionSistema implements Sistema {
             if (!(grafoConCentros.existeVertice(centroDestinoFantasma))) {
                 return Retorno.error3("El centro de destino no existe.");
             }
-
-            ListaImp<CentroLogistico> camino = grafoConCentros.obtenerCaminoMasCorto(centroOrigenFantasma, centroDestinoFantasma, "DISTANCIA");
+            int [] contador=new int[1];
+            ListaImp<CentroLogistico> camino = grafoConCentros.obtenerCaminoMasCorto(centroOrigenFantasma, centroDestinoFantasma, "DISTANCIA", contador);
 
 
             if (camino == null) {
@@ -331,7 +332,7 @@ public class ImplementacionSistema implements Sistema {
 
             String caminoFinal = armarStringCamino(camino);
 
-            return Retorno.ok(caminoFinal);
+            return Retorno.ok(contador[0], caminoFinal);
         }
 
         @Override
@@ -350,8 +351,8 @@ public class ImplementacionSistema implements Sistema {
             if (!(grafoConCentros.existeVertice(centroDestinoFantasma))) {
                 return Retorno.error3("El centro de destino no existe.");
             }
-
-            ListaImp<CentroLogistico> camino = grafoConCentros.obtenerCaminoMasCorto(centroOrigenFantasma, centroDestinoFantasma, "TIEMPO");
+            int [] contador=new int[1];
+            ListaImp<CentroLogistico> camino = grafoConCentros.obtenerCaminoMasCorto(centroOrigenFantasma, centroDestinoFantasma, "TIEMPO", contador);
 
 
             if (camino == null) {
@@ -362,18 +363,17 @@ public class ImplementacionSistema implements Sistema {
 
             String caminoFinal = armarStringCamino(camino);
 
-            return Retorno.ok(caminoFinal);
+            return Retorno.ok(contador[0], caminoFinal);
         }
 
 
 
 
-
-
-
-
+//----------------------------------******************----------------------------------
+//----------------------------------******************----------------------------------
 //----------------------------------METODOS ACCESORIOS----------------------------------
-
+//----------------------------------******************----------------------------------
+//----------------------------------******************----------------------------------
 
 
     private String ordenaListaDevuelveString(ListaImp<CentroLogistico> lista) {
@@ -446,21 +446,24 @@ public class ImplementacionSistema implements Sistema {
 
 
 
-    private Mercaderia obtenerMercaderíaPorId(Mercaderia mercaderia, NodoGen<Mercaderia> nodo) {
+    private Mercaderia obtenerMercaderiaPorId(Mercaderia mercaderia, NodoGen<Mercaderia> nodo, int[] contador) {
         if (nodo == null) {
             return null;
-        } else {
-            if (nodo.getDato().compareTo(mercaderia) == 0) {
-                return nodo.getDato();
-            } else if (nodo.getDato().compareTo(mercaderia) < 0) {
-                return obtenerMercaderíaPorId(mercaderia, nodo.getDer());
-            } else {
-                return obtenerMercaderíaPorId(mercaderia, nodo.getIzq());
-            }
         }
 
+        contador[0]++;
 
+        if (nodo.getDato().compareTo(mercaderia) == 0) {
+            return nodo.getDato();
+        } else if (nodo.getDato().compareTo(mercaderia) < 0) {
+            return obtenerMercaderiaPorId(mercaderia, nodo.getDer(), contador);
+        } else {
+            return obtenerMercaderiaPorId(mercaderia, nodo.getIzq(), contador);
+        }
     }
+
+
+
 
     private Mercaderia obtenerMercaderíaPorCodigo(WMercaderiaPorCodigo mercaderia, NodoGen<WMercaderiaPorCodigo> nodo, int[] cont) {
 

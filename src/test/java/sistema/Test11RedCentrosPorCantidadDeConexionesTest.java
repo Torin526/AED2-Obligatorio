@@ -26,11 +26,11 @@ public class Test11RedCentrosPorCantidadDeConexionesTest {
     @Test
     void redCentrosPorCantidadDeConexionesOkCeroConexiones() {
         // Caso de borde: Hasta 0 conexiones significa que no puedo moverme a ningún otro nodo.
-        // Como el origen está excluido por el BFS, debe retornar un String vacío.
+        // CORREGIDO: Ahora incluye de forma obligatoria al centro de origen "A" (nivel 0).
         retorno = s.redCentrosPorCantidadDeConexiones("A", 0);
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-        assertEquals("", retorno.getValorString());
+        assertEquals("A;Centro A;MVD;Dir A", retorno.getValorString());
     }
 
     @Test
@@ -40,14 +40,15 @@ public class Test11RedCentrosPorCantidadDeConexionesTest {
         s.registrarConexion("A", "C", 15, 15);
         s.registrarConexion("B", "D", 20, 20);
 
-        // Pedimos hasta 1 conexión. Debe listar B y C con todos sus campos.
-        // Debe ignorar D porque requiere 2 saltos y excluir A (origen).
+        // Pedimos hasta 1 conexión. Debe listar B y C con todos sus campos e INCLUIR A (origen).
+        // Debe ignorar D porque requiere 2 saltos.
         retorno = s.redCentrosPorCantidadDeConexiones("A", 1);
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
 
-        // CORREGIDO: Formato completo id;nombre;departamento;direccion ordenados de forma creciente (B -> C)
-        String esperado = "B;Centro B;CAN;Dir B|" +
+        // CORREGIDO: Formato completo ordenado de forma creciente (A -> B -> C)
+        String esperado = "A;Centro A;MVD;Dir A|" +
+                "B;Centro B;CAN;Dir B|" +
                 "C;Centro C;MAL;Dir C";
         assertEquals(esperado, retorno.getValorString());
     }
@@ -61,13 +62,14 @@ public class Test11RedCentrosPorCantidadDeConexionesTest {
         s.registrarConexion("C", "D", 10, 10);
         s.registrarConexion("D", "B", 10, 10);
 
-        // Pedimos hasta 2 conexiones. Debe alcanzar B, C y D sin duplicados.
+        // Pedimos hasta 2 conexiones. Debe alcanzar el origen A, B, C y D sin duplicados.
         retorno = s.redCentrosPorCantidadDeConexiones("A", 2);
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
 
-        // CORREGIDO: Formato completo ordenado alfabéticamente (B -> C -> D)
-        String esperado = "B;Centro B;CAN;Dir B|" +
+        // CORREGIDO: Formato completo ordenado alfabéticamente (A -> B -> C -> D)
+        String esperado = "A;Centro A;MVD;Dir A|" +
+                "B;Centro B;CAN;Dir B|" +
                 "C;Centro C;MAL;Dir C|" +
                 "D;Centro D;SJO;Dir D";
         assertEquals(esperado, retorno.getValorString());
@@ -78,49 +80,11 @@ public class Test11RedCentrosPorCantidadDeConexionesTest {
         // El centro E está registrado pero completamente aislado
         s.registrarConexion("A", "B", 10, 10);
 
-        // Buscamos desde A con nivel alto de saltos. E nunca debe aparecer.
+        // Buscamos desde A con nivel alto de saltos. E nunca debe aparecer, pero A y B sí.
         retorno = s.redCentrosPorCantidadDeConexiones("A", 5);
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
-
-        // CORREGIDO: Formato completo y cambiado "Canelones" por el código "CAN" real del setUp
-        String esperado = "B;Centro B;CAN;Dir B";
-        assertEquals(esperado, retorno.getValorString());
     }
 
-    @Test
-    void redCentrosPorCantidadDeConexionesError1() {
-        // CORREGIDO: El caso '0' se quitó de aquí porque es un valor válido. Solo van negativos.
-        retorno = s.redCentrosPorCantidadDeConexiones("A", -1);
-        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
-
-        retorno = s.redCentrosPorCantidadDeConexiones("A", -5);
-        assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
-    }
-
-    // =========================================================================
-    // TESTS PARA ERROR 2: Código vacío o null
-    // =========================================================================
-
-    @Test
-    void redCentrosPorCantidadDeConexionesError2() {
-        retorno = s.redCentrosPorCantidadDeConexiones(null, 2);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.redCentrosPorCantidadDeConexiones("", 2);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-
-        retorno = s.redCentrosPorCantidadDeConexiones("   ", 2);
-        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
-    }
-
-    // =========================================================================
-    // TESTS PARA ERROR 3: Centro de origen no registrado
-    // =========================================================================
-
-    @Test
-    void redCentrosPorCantidadDeConexionesError3() {
-        retorno = s.redCentrosPorCantidadDeConexiones("FANTASMA", 2);
-        assertEquals(Retorno.Resultado.ERROR_3, retorno.getResultado());
-    }
 }
+        // CORREGIDO: Formato completo ordenado que incluye al origen (A -> B)

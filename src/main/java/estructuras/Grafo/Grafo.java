@@ -171,20 +171,32 @@ public class Grafo implements IGrafo {
 
 
     public ListaImp<CentroLogistico> bfsConNivelYCantidadDeNiveles(CentroLogistico vert, int cantidad) {
-        ListaImp<CentroLogistico> listaRet=new ListaImp<CentroLogistico>();
+        ListaImp<CentroLogistico> listaRet = new ListaImp<CentroLogistico>();
         boolean[] visitados = new boolean[tope];
+
         int inicio = obtenerPosVertice(vert);
+        if (inicio == -1) return listaRet; // Control de seguridad
+
         Cola<Tupla> cola = new Cola<>();
         visitados[inicio] = true;
         cola.encolar(new Tupla(inicio, 0));
-        boolean llegoANivel=false;
-        while (!cola.esVacia()&&!llegoANivel) {
+
+        while (!cola.esVacia()) {
             Tupla tupla = cola.desencolar();
             int pos = tupla.getPos();
             int nivel = tupla.getNivel();
-            if (pos != inicio) {
-                listaRet.insertarAlInicio(vertices[pos]);
+
+            // Si el elemento desencolado ya superó el nivel máximo, no lo procesamos
+            // y como la cola está ordenada por nivel en BFS, podemos terminar aquí.
+            if (nivel > cantidad) {
+                break;
             }
+
+            // CORREGIDO: Insertamos TODOS los vértices que estén dentro del rango,
+            // incluyendo al origen (inicio), tal como lo exige el caso cantidad = 0.
+            listaRet.insertarAlFinal(vertices[pos]);
+
+            // Si todavía no llegamos al límite de conexiones, seguimos expandiendo los vecinos
             if (nivel < cantidad) {
                 for (int j = 0; j < tope; j++) {
                     if (matAdy[pos][j].isExiste() && !visitados[j]) {
@@ -194,7 +206,7 @@ public class Grafo implements IGrafo {
                 }
             }
         }
-    return listaRet;
+        return listaRet;
     }
 
     private void caminoMasCortoSegunCriterio(CentroLogistico verticeInicial, String criterio, int[] costos, CentroLogistico[] anteriores) {
@@ -233,9 +245,10 @@ public class Grafo implements IGrafo {
                         }
 
                         // Etapa de relajación (modifica directamente los arrays del parámetro)
-                        if (costos[j] > (costos[posVerMenorCosto] + pesoArista)) {
+                        // CORREGIDO  contra desbordamientos:
+                        if (costos[posVerMenorCosto] != Integer.MAX_VALUE && costos[j] > (costos[posVerMenorCosto] + pesoArista)) {
                             costos[j] = costos[posVerMenorCosto] + pesoArista;
-                            anteriores[j] = vertices[posVerMenorCosto]; // Guarda el nombre del vértice
+                            anteriores[j] = vertices[posVerMenorCosto];
                         }
                     }
                 }
@@ -244,8 +257,7 @@ public class Grafo implements IGrafo {
 
 
    }
-
-    public ListaImp<CentroLogistico> obtenerCaminoMasCorto(CentroLogistico origen, CentroLogistico destino, String criterio) {
+    public ListaImp<CentroLogistico> obtenerCaminoMasCorto(CentroLogistico origen, CentroLogistico destino, String criterio, int[] contador) {
         int[] costos = new int[tope];
         CentroLogistico[] anteriores = new CentroLogistico[tope];
 
@@ -259,11 +271,15 @@ public class Grafo implements IGrafo {
         }
 
 
+        // Como 'costos' ya tiene el acumulado según el criterio que corrió Dijkstra,
+        // asignamos directamente el valor final del destino al contador.
+        // Si fue "DISTANCIA" guardará los km totales, si fue "TIEMPO" guardará los minutos totales.
+        contador[0] = costos[posDestino];
 
         ListaImp<CentroLogistico> camino = new ListaImp<>();
 
         // 2. El propio grafo, que SÍ conoce las posiciones, reconstruye el camino hacia atrás
-        int posActual = obtenerPosVertice(destino);
+        int posActual = posDestino;
         int posOrigen = obtenerPosVertice(origen);
 
         while (posActual != posOrigen) {
@@ -271,7 +287,7 @@ public class Grafo implements IGrafo {
             CentroLogistico nomAnterior = anteriores[posActual];
             posActual = obtenerPosVertice(nomAnterior);
         }
-        camino.insertarAlInicio(vertices[posOrigen]); // Mete el origen al final
+        camino.insertarAlInicio(vertices[posOrigen]); // Mete el origen al inicio
 
         return camino;
     }
