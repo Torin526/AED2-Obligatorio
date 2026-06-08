@@ -20,7 +20,7 @@ public class ImplementacionSistema implements Sistema {
     private ABB<Mercaderia> arbolGralMercaderia;
     private ABB<WMercaderiaPorCodigo> arbolGralMercaderiaPorCodigo;
     private ListaImp<ABB<Mercaderia>> arbolesPorCategoria;
-    private CentroLogistico[] vectorCentros;
+
 
 
     @Override
@@ -31,9 +31,6 @@ public class ImplementacionSistema implements Sistema {
 
         this.arbolesPorCategoria = new ListaImp<ABB<Mercaderia>>();
         this.grafoConCentros = new Grafo(maxCentros, true);
-        this.grafoConCentros.setTope(maxCentros);
-        this.grafoConCentros.setCantActual(0);
-        vectorCentros = new CentroLogistico[maxCentros];
         arbolGralMercaderia = new ABB<Mercaderia>();
         arbolGralMercaderiaPorCodigo = new ABB<WMercaderiaPorCodigo>();
         crearArbolesEnCadaCategoria(arbolesPorCategoria);
@@ -46,46 +43,48 @@ public class ImplementacionSistema implements Sistema {
     @Override
     public Retorno registrarMercaderia(String id, String codigo, String descripcion, boolean fragil,
                                        Categoria categoria) {
-        if (id == null || id.isBlank() || codigo == null || codigo.isBlank() || descripcion == null || descripcion.isBlank() || categoria == null) {
+
+        //Error 1
+        if (id == null || id.isBlank() || codigo == null || codigo.isBlank() ||
+                descripcion == null || descripcion.isBlank() || categoria == null) {
             return Retorno.error1("No puede haber campos vacíos o en null");
         }
+
+        //Error 2
         if (!(formatoValidoCodigo(codigo))) {
             return Retorno.error2("Debe cumplir con el formato estipulado");
         }
-        //Debe ser hecho de esta manera porque devuelve un objeto de tipo retorno. De ese objeto usamos el metodo isOk()
+
+        //Error 3
         Mercaderia mercaderiaParaChequeoXId = new Mercaderia(id, null, null, false, null);
         if (arbolGralMercaderia.pertenece(mercaderiaParaChequeoXId)) {
             return Retorno.error3("Ya existe una mercadería con ese Id");
-            //||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-            //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            // VER SI ESTÁ BIEN ESTA IMPLEMENTACIÓN!!!!!!!!!!!!!!!!!!!!!
         }
-        //Debe ser hecho de esta manera porque devuelve un objeto de tipo retorno. De ese objeto usamos el metodo isOk()
+
+        //Error 4
         Mercaderia mercaderiaParaChequeoXCP = new Mercaderia(null, codigo, null, false, null);
         WMercaderiaPorCodigo wrapperFantasma = new WMercaderiaPorCodigo(mercaderiaParaChequeoXCP);
         if (arbolGralMercaderiaPorCodigo.pertenece(wrapperFantasma)) {
             return Retorno.error4("Ya existe una mercadería con ese codigo");
-            //||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-            //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            // VER SI ESTÁ BIEN ESTA IMPLEMENTACIÓN!!!!!!!!!!!!!!!!!!!!!
         }
+
+        //Caso feliz
         Mercaderia mer = new Mercaderia(id, codigo, descripcion, fragil, categoria);
         arbolGralMercaderia.insertar(mer);
         WMercaderiaPorCodigo wMer = new WMercaderiaPorCodigo(mer);
         arbolGralMercaderiaPorCodigo.insertar(wMer);
-
-        // recuperar. busca el NODO de la lista en la posición que indica el índice de la categoría.
-        // getDato() abre ese nodo para extraer el ÁRBOL (ABB) de mercaderías que guardamos adentro.
-        // insertar(mer) mete la mercadería en ese árbol específico, ordenándola por su ID de forma eficiente.
-        arbolesPorCategoria.recuperar(mer.getCategoria().getIndice()).getDato().insertar(mer);
+        insertarMercaderiaEnArbolDeSuCategoria(mer);
 
         return Retorno.ok("Mercadería ingresada correctamente");
     }
 
 
+
+
     @Override
     public Retorno buscarMercaderiaPorId(String id) {
 
+        //Error 1
         if (id == null || id.isBlank()) {
             return Retorno.error1("No puede haber campos vacíos o en null");
         }
@@ -93,11 +92,14 @@ public class ImplementacionSistema implements Sistema {
         Mercaderia mercaderiaParaChequeo = new Mercaderia(id, null, null, false, null);
         int[] contador=new int[1];
         Mercaderia mercaderiaAMostrar = obtenerMercaderiaPorId(mercaderiaParaChequeo, arbolGralMercaderia.getRaiz(),contador);
+
+        //Error 2
         if (mercaderiaAMostrar == null) {
             return Retorno.error2("No existe una mercadería con ese Id");
-
         }
-String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPostal() + ";" + mercaderiaAMostrar.getDescripcion()
+
+        //Caso feliz
+        String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPostal() + ";" + mercaderiaAMostrar.getDescripcion()
         + ";" + mercaderiaAMostrar.isFragil() + ";" + mercaderiaAMostrar.getCategoria().getTexto();
 
         return Retorno.ok(contador[0],retorna);
@@ -107,13 +109,17 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
     @Override
     public Retorno listarMercaderiasPorIdAscendente() {
 
+        //Caso feliz
         ListaImp<Mercaderia> listaMer = new ListaImp<Mercaderia>();
         cargarListaAsc(listaMer, arbolGralMercaderia.getRaiz());
         String salida = "";
         Nodo<Mercaderia> actual = listaMer.getInicio();
 
         while (actual != null) {
-            salida += actual.getDato().getId() + ";" + actual.getDato().getCodigoPostal() + ";" + actual.getDato().getDescripcion() + ";" + actual.getDato().isFragil() + ";" + actual.getDato().getCategoria().getTexto() + "|";
+            salida += actual.getDato().getId() + ";" + actual.getDato().getCodigoPostal() +
+                    ";" + actual.getDato().getDescripcion() + ";" + actual.getDato().isFragil() +
+                    ";" + actual.getDato().getCategoria().getTexto() + "|";
+
             actual = actual.getSig();
         }
         //Hacemos así para que no se rompa si no habían Mercaderías.
@@ -127,14 +133,17 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
 
     @Override
     public Retorno listarMercaderiasPorIdDescendente() {
-
+        //Caso feliz
         ListaImp<Mercaderia> listaMer = new ListaImp<Mercaderia>();
         cargarListaDesc(listaMer, arbolGralMercaderia.getRaiz());
         String salida = "";
         Nodo<Mercaderia> actual = listaMer.getInicio();
 
         while (actual != null) {
-            salida += actual.getDato().getId() + ";" + actual.getDato().getCodigoPostal() + ";" + actual.getDato().getDescripcion() + ";" + actual.getDato().isFragil() + ";" + actual.getDato().getCategoria().getTexto() + "|";
+            salida += actual.getDato().getId() + ";" + actual.getDato().getCodigoPostal() +
+                    ";" + actual.getDato().getDescripcion() + ";" + actual.getDato().isFragil() +
+                    ";" + actual.getDato().getCategoria().getTexto() + "|";
+
             actual = actual.getSig();
         }
         //Hacemos así para que no se rompa si no habían Mercaderías.
@@ -148,6 +157,7 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
     @Override
     public Retorno buscarMercaderiaPorCodigo(String codigo) {
 
+        //Error 1
         if (codigo == null || codigo.isBlank()) {
             return Retorno.error1("No puede haber campos vacíos o en null");
         }
@@ -157,13 +167,16 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
 
         WMercaderiaPorCodigo wMercaderiaParaChequeo = new WMercaderiaPorCodigo(mercaderiaParaChequeo);
         Mercaderia mercaderiaAMostrar = obtenerMercaderíaPorCodigo(wMercaderiaParaChequeo, arbolGralMercaderiaPorCodigo.getRaiz(), cont);
+        //Error 2
         if (mercaderiaAMostrar == null) {
             return Retorno.error2("No existe una mercadería con ese código");
 
         }
 
-        String ret=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPostal() + ";" + mercaderiaAMostrar.getDescripcion()
-                + ";" + mercaderiaAMostrar.isFragil() + ";" + mercaderiaAMostrar.getCategoria().getTexto();
+        String ret=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPostal() +
+                ";" + mercaderiaAMostrar.getDescripcion()+ ";" + mercaderiaAMostrar.isFragil() +
+                ";" + mercaderiaAMostrar.getCategoria().getTexto();
+
         return Retorno.ok(cont[0],ret);
 
     }
@@ -172,15 +185,17 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
     @Override
     public Retorno listarMercaderiasPorCodigoAscendente() {
 
+        //Camino feliz
         ListaImp<WMercaderiaPorCodigo> listaWMer = new ListaImp<WMercaderiaPorCodigo>();
         cargarListaAsc(listaWMer, arbolGralMercaderiaPorCodigo.getRaiz());
         String salida = "";
         Nodo<WMercaderiaPorCodigo> actual = listaWMer.getInicio();
 
         while (actual != null) {
-            salida += actual.getDato().getMercaderia().getId() + ";" + actual.getDato().getMercaderia().getCodigoPostal() + ";" +
-                    actual.getDato().getMercaderia().getDescripcion() + ";" + actual.getDato().getMercaderia().isFragil() + ";" +
-                    actual.getDato().getMercaderia().getCategoria().getTexto() + "|";
+            salida += actual.getDato().getMercaderia().getId()+";"+actual.getDato().getMercaderia().getCodigoPostal()+
+                    ";"+actual.getDato().getMercaderia().getDescripcion()+";"+actual.getDato().getMercaderia().isFragil()+
+                    ";"+actual.getDato().getMercaderia().getCategoria().getTexto() + "|";
+
             actual = actual.getSig();
         }
         //Hacemos así para que no se rompa si no habían Mercaderías.
@@ -194,21 +209,34 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
     @Override
     public Retorno listarMercaderiasPorCategoria(Categoria unaCategoria) {
 
+        // Camino feliz
 
-        ABB<Mercaderia> arbolDeLaCategoría=arbolesPorCategoria.recuperar(unaCategoria.getIndice()).getDato();
-        ListaImp<Mercaderia> arbolCatALista=arbolDeLaCategoría.obtenerAsc();
-        //Chequeamos que no sea vacia para no tener problemas dentro del while y que se rompa cuando trabajamos con subString
+        int indiceCategoria = unaCategoria.getIndice();
+
+        // Recuperamos el NODO de la lista que contiene el arbol
+        Nodo<ABB<Mercaderia>> nodoContenedor = arbolesPorCategoria.recuperar(indiceCategoria);
+
+        // Extraemos el ÁRBOL (ABB) de mercaderías que está almacenado dentro del nodo
+        ABB<Mercaderia> arbolDeLaCategoria = nodoContenedor.getDato();
+
+        //Pasamos a lista ascendente los datos del arbol.
+        ListaImp<Mercaderia> arbolCatALista=arbolDeLaCategoria.obtenerAsc();
+
+        //Chequeamos que no sea vacia para no tener problemas dentro del while
+        // y que se rompa cuando trabajamos con subString
         if (arbolCatALista.esVacia()) {
             return Retorno.ok("");
         }
         Nodo<Mercaderia> actual = arbolCatALista.getInicio();
         String ret="";
 
+        //formateamos el string según formato esperado.
         while (actual != null) {
             Mercaderia m = actual.getDato();
             ret += m.getId() + ";" + m.getCodigoPostal() + ";" + m.getDescripcion() + ";" +m.isFragil() + ";" + m.getCategoria().getTexto() + "|";
             actual=actual.getSig();
         }
+        //Quitamos el | útlimo que no corresponde
         ret=ret.substring(0, ret.length() - 1);
 
 
@@ -219,20 +247,26 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
 
     @Override
     public Retorno registrarCentroLogistico(String codigo, String nombre, String departamento, String direccion) {
+
+        //Error 1
         if (grafoConCentros.getCantActual()>= grafoConCentros.getTope()) {
             return Retorno.error1("Se han alcanzado el numero máximo de centros");
         }
+
+        //Error 2
         if (codigo == null || codigo.isBlank() || nombre == null || nombre.isBlank() || departamento == null || departamento.isBlank() || direccion == null|| direccion.isBlank()) {
             return Retorno.error2("No puede haber campos vacíos o en null");
         }
-        //Debe ser hecho de esta manera porque devuelve un objeto de tipo retorno. De ese objeto usamos el metodo isOk()
+
         CentroLogistico centroAAgregar=new CentroLogistico(codigo,  nombre,  departamento,  direccion);
+
+        //Error 3
         if (grafoConCentros.existeVertice(centroAAgregar)) {
             return Retorno.error3("Ya existe una centro Logísitico con ese código");
 
         }
 
-
+        //Camino feliz
         grafoConCentros.agregarVertice(centroAAgregar);
         return Retorno.ok();
     }
@@ -241,31 +275,44 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
 
     @Override
         public Retorno registrarConexion (String codigoOrigen, String codigoDestino,int distancia, int tiempo){
+
+        //Error 1
         if (codigoOrigen == null || codigoOrigen.isBlank() || codigoDestino == null || codigoDestino.isBlank()) {
             return Retorno.error1("No puede haber campos vacíos o en null");
         }
 
+
         CentroLogistico centroOrigenFantasma= new CentroLogistico(codigoOrigen, null, null, null);
+
+        //Error 2
         if (!(grafoConCentros.existeVertice(centroOrigenFantasma))) {
             return Retorno.error2("El centro de origeno no existe.");
         }
-        //Debe ser hecho de esta manera porque devuelve un objeto de tipo retorno. De ese objeto usamos el metodo isOk()
+
         CentroLogistico centroDestinoFantasma= new CentroLogistico(codigoDestino, null, null, null);
+
+        //Error 3
         if (!(grafoConCentros.existeVertice(centroDestinoFantasma))) {
             return Retorno.error3("El centro de destino no existe.");
         }
 
+        //Error 4
         if (distancia<=0) {
             return Retorno.error4("La distancia debe ser mayor a 0.");
         }
 
+        //Error 5
         if (tiempo<=0) {
             return Retorno.error5("El tiempo debe ser mayor a 0.");
         }
 
+        //Error 6
         if (grafoConCentros.sonAdyacentes(centroOrigenFantasma,centroDestinoFantasma)) {
             return Retorno.error6("La conexión ya existe en el grafo");
         }
+
+
+        //Camino feliz
         Conexion conexion=new Conexion(codigoOrigen,  codigoDestino,  distancia,  tiempo);
         grafoConCentros.agregarArista(centroOrigenFantasma, centroDestinoFantasma, conexion);
 
@@ -281,20 +328,24 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
         @Override
         public Retorno redCentrosPorCantidadDeConexiones (String codigoOrigen,int cantidad){
 
+            //Error 1
             if (cantidad<0) {
                 return Retorno.error1("ingrese una cantidad mayor a cero");
             }
 
-
+            //Error 2
             if (codigoOrigen==null||codigoOrigen.isBlank()) {
                 return Retorno.error2("Debe introducir un codigo de origen.");
             }
 
             CentroLogistico centroLogFantasma= new CentroLogistico(codigoOrigen, null, null, null);
+
+            //Error 3
             if (!(grafoConCentros.existeVertice(centroLogFantasma))) {
                 return Retorno.error3("El centro logistico no existe.");
             }
 
+            //Camino feliz
 
             ListaImp<CentroLogistico> listaPasarAString=grafoConCentros.bfsConNivelYCantidadDeNiveles(centroLogFantasma, cantidad);
 
@@ -306,30 +357,36 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
 
         @Override
         public Retorno viajeCostoMinimoDistancia (String codigoOrigen, String codigoDestino){
+
+            //Error 1
             if (codigoOrigen==null||codigoOrigen.isBlank()||codigoDestino==null||codigoDestino.isBlank()) {
                 return Retorno.error1("Los datos a ingresar no pueden estar vacios");
             }
 
 
             CentroLogistico centroOrigenFantasma= new CentroLogistico(codigoOrigen, null, null, null);
+
+            //Error 2
             if (!(grafoConCentros.existeVertice(centroOrigenFantasma))) {
                 return Retorno.error2("El centro logistico no existe.");
             }
 
             CentroLogistico centroDestinoFantasma= new CentroLogistico(codigoDestino, null, null, null);
+
+            //Error 3
             if (!(grafoConCentros.existeVertice(centroDestinoFantasma))) {
                 return Retorno.error3("El centro de destino no existe.");
             }
             int [] contador=new int[1];
             ListaImp<CentroLogistico> camino = grafoConCentros.obtenerCaminoMasCorto(centroOrigenFantasma, centroDestinoFantasma, "DISTANCIA", contador);
 
-
+            //Error 4
             if (camino == null) {
                 return Retorno.error4("No existe conexión entre los vértices.");
             }
 
 
-
+            //Camino feliz
             String caminoFinal = armarStringCamino(camino);
 
             return Retorno.ok(contador[0], caminoFinal);
@@ -337,30 +394,36 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
 
         @Override
         public Retorno viajeCostoMinimoTiempo (String codigoOrigen, String codigoDestino){
+            //Error 1
             if (codigoOrigen==null||codigoOrigen.isBlank()||codigoDestino==null||codigoDestino.isBlank()) {
                 return Retorno.error1("Los datos a ingresar no pueden estar vacios");
             }
 
 
             CentroLogistico centroOrigenFantasma= new CentroLogistico(codigoOrigen, null, null, null);
+
+            //Error 2
             if (!(grafoConCentros.existeVertice(centroOrigenFantasma))) {
                 return Retorno.error2("El centro logistico no existe.");
             }
 
             CentroLogistico centroDestinoFantasma= new CentroLogistico(codigoDestino, null, null, null);
+
+            //Error 3
             if (!(grafoConCentros.existeVertice(centroDestinoFantasma))) {
                 return Retorno.error3("El centro de destino no existe.");
             }
             int [] contador=new int[1];
             ListaImp<CentroLogistico> camino = grafoConCentros.obtenerCaminoMasCorto(centroOrigenFantasma, centroDestinoFantasma, "TIEMPO", contador);
 
-
+            //Error 4
             if (camino == null) {
                 return Retorno.error4("No existe conexión entre los vértices.");
             }
 
 
 
+            //Camino feliz
             String caminoFinal = armarStringCamino(camino);
 
             return Retorno.ok(contador[0], caminoFinal);
@@ -375,6 +438,23 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
 //----------------------------------******************----------------------------------
 //----------------------------------******************----------------------------------
 
+
+
+    private void insertarMercaderiaEnArbolDeSuCategoria(Mercaderia mer) {
+
+        //Nos quedamos con el indice de la categoria de la mercadería a agregar
+        int indiceCategoria = mer.getCategoria().getIndice();
+
+
+        //Buscamos y recuperamos el NODO de la lista en esa posición específica(coincide porque así fue diseñado)
+        Nodo<ABB<Mercaderia>> nodoContenedor = arbolesPorCategoria.recuperar(indiceCategoria);
+
+        //Extraemos el ÁRBOL (ABB) que está guardado adentro de ese nodo
+        ABB<Mercaderia> arbolDeLaCategoria = nodoContenedor.getDato();
+
+        //Insertamos la mercadería en su árbol correspondiente
+        arbolDeLaCategoria.insertar(mer);
+    }
 
     private String ordenaListaDevuelveString(ListaImp<CentroLogistico> lista) {
         // Caso de borde: si no hay elementos, devolvemos un String vacío sin romper nada
@@ -455,10 +535,12 @@ String retorna=mercaderiaAMostrar.getId() + ";" + mercaderiaAMostrar.getCodigoPo
 
         if (nodo.getDato().compareTo(mercaderia) == 0) {
             return nodo.getDato();
-        } else if (nodo.getDato().compareTo(mercaderia) < 0) {
-            return obtenerMercaderiaPorId(mercaderia, nodo.getDer(), contador);
-        } else {
-            return obtenerMercaderiaPorId(mercaderia, nodo.getIzq(), contador);
+        } else
+            if (nodo.getDato().compareTo(mercaderia) < 0) {
+                return obtenerMercaderiaPorId(mercaderia, nodo.getDer(), contador);
+            }
+            else {
+                return obtenerMercaderiaPorId(mercaderia, nodo.getIzq(), contador);
         }
     }
 
